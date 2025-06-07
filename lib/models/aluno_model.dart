@@ -1,6 +1,6 @@
 import 'user_model.dart';
 
-/// Modelo específico para Aluno, herdando de UserModel.
+/// Modelo específico para Aluno herdando de UserModel.
 class AlunoModel extends UserModel {
   AlunoModel({
     required super.id,
@@ -64,4 +64,4 @@ class AlunoModel extends UserModel {
   int get hashCode => id.hashCode ^ email.hashCode;
 
   // Adicione métodos ou campos específicos de aluno aqui
-} 
+}

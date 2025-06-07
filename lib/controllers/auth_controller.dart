@@ -1,32 +1,9 @@
 /// Controlador responsável por gerenciar a autenticação do usuário.
 ///
-/// Responsabilidades:
 /// - Gerenciar o estado de autenticação do usuário
 /// - Controlar operações de login, registro e logout
 /// - Coordenar a navegação baseada no estado de autenticação
 /// - Manter o estado de loading durante operações
-///
-/// Fluxo de Autenticação:
-/// 1. Inicialização:
-///    - Configura listener para mudanças no estado de autenticação
-///    - Atualiza _isAuthenticated baseado no estado do Firebase
-///
-/// 2. Login:
-///    - Recebe email e senha
-///    - Gerencia estado de loading
-///    - Chama AuthService para autenticação
-///    - Notifica listeners sobre mudanças
-///
-/// 3. Registro:
-///    - Recebe dados do novo usuário
-///    - Cria conta no Firebase
-///    - Cria perfil do usuário no Firestore
-///    - Notifica listeners sobre mudanças
-///
-/// 4. Logout:
-///    - Desconecta usuário do Firebase
-///    - Limpa estado de autenticação
-///    - Navega para tela de login
 ///
 /// Dependências:
 /// - AuthService: Para operações de autenticação

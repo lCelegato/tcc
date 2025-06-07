@@ -1,6 +1,6 @@
 import 'user_model.dart';
 
-/// Modelo específico para Professor, herdando de UserModel.
+/// Modelo específico para Professor herdando de UserModel.
 class ProfessorModel extends UserModel {
   ProfessorModel({
     required super.id,
@@ -60,4 +60,4 @@ class ProfessorModel extends UserModel {
   int get hashCode => id.hashCode ^ email.hashCode;
 
   // Adicione métodos ou campos específicos de professor aqui
-} 
+}

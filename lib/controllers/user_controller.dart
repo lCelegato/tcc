@@ -1,33 +1,32 @@
 /// Controlador responsável por gerenciar os dados do usuário.
-/// 
+///
 /// Responsabilidades:
 /// - Gerenciar o estado dos dados do usuário
 /// - Controlar operações CRUD do perfil do usuário
 /// - Manter o estado de loading durante operações
 /// - Notificar mudanças no estado do usuário
-/// 
-/// Operações Disponíveis:
+///
 /// 1. Carregar Dados:
 ///    - Recebe UID do usuário
 ///    - Busca dados no Firestore
 ///    - Atualiza estado local
 ///    - Notifica listeners sobre mudanças
-/// 
+///
 /// 2. Atualizar Perfil:
 ///    - Recebe dados para atualização
 ///    - Atualiza no Firestore
 ///    - Recarrega dados atualizados
 ///    - Notifica listeners sobre mudanças
-/// 
+///
 /// 3. Deletar Perfil:
 ///    - Remove dados do Firestore
 ///    - Limpa estado local
 ///    - Notifica listeners sobre mudanças
-/// 
+///
 /// Estados:
 /// - _user: Dados atuais do usuário
 /// - _isLoading: Estado de loading durante operações
-/// 
+///
 /// Dependências:
 /// - UserService: Para operações no Firestore
 /// - UserModel: Para estrutura de dados do usuário
@@ -60,7 +59,8 @@ class UserController extends ChangeNotifier {
     }
   }
 
-  Future<void> updateUserProfile(String uid, String tipo, Map<String, dynamic> data) async {
+  Future<void> updateUserProfile(
+      String uid, String tipo, Map<String, dynamic> data) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -119,7 +119,8 @@ class UserController extends ChangeNotifier {
   }
 
   // Atualizar dados do aluno
-  Future<void> atualizarAluno(String alunoId, Map<String, dynamic> dados, BuildContext context) async {
+  Future<void> atualizarAluno(
+      String alunoId, Map<String, dynamic> dados, BuildContext context) async {
     try {
       await updateUserProfile(alunoId, 'aluno', dados);
       if (!context.mounted) return;
@@ -161,4 +162,4 @@ class UserController extends ChangeNotifier {
       );
     }
   }
-} 
+}

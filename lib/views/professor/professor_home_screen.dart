@@ -1,31 +1,4 @@
-/// Tela específica para professores que exibe o menu de funcionalidades disponíveis.
-///
-/// Funcionalidades disponíveis:
-/// 1. Gerenciar Aulas
-///    - Permite criar, editar e excluir aulas
-///    - Visualizar lista de aulas existentes
-///    - Gerenciar conteúdo e materiais das aulas
-///
-/// 2. Meus Alunos
-///    - Lista todos os alunos vinculados ao professor
-///    - Visualizar perfil e progresso dos alunos
-///    - Gerenciar matrículas e vínculos
-///
-/// 3. Agenda
-///    - Visualizar horários das aulas
-///    - Gerenciar disponibilidade
-///    - Agendar aulas e eventos
-///
-/// 4. Relatórios
-///    - Visualizar estatísticas de desempenho
-///    - Relatórios de frequência
-///    - Análise de progresso dos alunos
-///
-/// Layout:
-/// - Grid 2x2 com cards coloridos
-/// - Cada card tem ícone, título e ação ao tocar
-/// - Cores distintas para cada funcionalidade
-///
+/// Home Screen para professores
 /// Dependências:
 /// - MenuCard: Widget reutilizável para os cards do menu
 /// - AppButton: Widget reutilizável para botões

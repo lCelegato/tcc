@@ -1,5 +1,3 @@
-/// Modelo que representa um usuário no sistema.
-/// 
 /// Atributos:
 /// - id: Identificador único do usuário (UID do Firebase)
 /// - nome: Nome completo do usuário
@@ -7,26 +5,20 @@
 /// - tipo: Tipo de usuário ('professor' ou 'aluno')
 /// - dataCriacao: Data e hora de criação do perfil
 /// - professorId: Identificador do professor associado ao usuário
-/// 
+///
 /// Funcionalidades:
-/// 1. Conversão de Dados:
 ///    - fromMap: Converte dados do Firestore para objeto
 ///    - toMap: Converte objeto para formato do Firestore
-/// 
-/// 2. Validações:
+///
+/// Validações:
 ///    - Tipo de usuário válido
 ///    - Email válido
 ///    - Nome não vazio
-/// 
-/// Uso:
+///
 /// - Armazenamento de dados do usuário
 /// - Transferência de dados entre camadas
 /// - Serialização/deserialização com Firestore
-/// 
-/// Observações:
-/// - Imutável após criação
-/// - Validações são realizadas na criação
-/// - Compatível com Firestore
+///
 library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -109,4 +101,4 @@ class UserModel {
 
   @override
   int get hashCode => id.hashCode ^ email.hashCode;
-} 
+}

@@ -5,7 +5,7 @@ class CadastroProfessorController extends ChangeNotifier {
   final AuthController _authController = AuthController();
 
   Future<bool> validarCodigoProfessor(String codigo) async {
-    // Exemplo: código fixo, pode ser expandido para buscar de uma coleção
+    // Exemplo: código para limitar registros
     return codigo.trim() == 'TCC2025';
   }
 
@@ -54,4 +54,4 @@ class CadastroProfessorController extends ChangeNotifier {
       );
     }
   }
-} 
+}

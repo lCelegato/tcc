@@ -6,8 +6,7 @@
 /// - color: Cor base para o gradiente
 /// - onTap: Função chamada ao tocar
 ///
-/// Uso:
-/// - Menu principal do professor
+/// Uso: menu principal do professor
 
 library;
 

@@ -20,15 +20,17 @@ class _MeusAlunosScreenState extends State<MeusAlunosScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (!_carregou) {
+      if (!_carregou && mounted) {
         final userController = context.read<UserController>();
         final authController = context.read<AuthController>();
         final user = authController.currentUser;
         if (user != null) {
           userController.loadUserData(user.uid, 'professor');
-          setState(() {
-            _carregou = true;
-          });
+          if (mounted) {
+            setState(() {
+              _carregou = true;
+            });
+          }
         }
       }
     });

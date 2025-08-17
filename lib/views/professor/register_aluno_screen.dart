@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_tcc/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/user_controller.dart';
-import '../../models/user_model.dart';
 import '../../controllers/cadastro_aluno_controller.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_button.dart';

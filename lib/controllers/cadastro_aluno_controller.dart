@@ -34,10 +34,11 @@ class CadastroAlunoController extends ChangeNotifier {
         throw Exception('Sessão do professor não encontrada.');
       }
 
-      // Buscar dados do professor
+      // Validar se o professor existe
       final professores = await _userService.getAllProfessoresPublicos().first;
-      final professor = professores.firstWhere((p) => p.id == professorId,
-          orElse: () => throw Exception('Professor não encontrado.'));
+      if (!professores.any((p) => p.id == professorId)) {
+        throw Exception('Professor não encontrado.');
+      }
 
       // Criar usuário no Auth sem fazer login
       await _authController.signUpAlunoComProfessor(

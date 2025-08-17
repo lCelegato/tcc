@@ -1,4 +1,5 @@
 /// widget para exibir os alunos do professor
+library;
 
 import 'package:flutter/material.dart';
 

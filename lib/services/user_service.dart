@@ -44,7 +44,7 @@ class UserService {
     }
   }
 
-  /// Converte dados do Firestore para Map<String, dynamic>.
+  /// Converte dados do Firestore para Map de String para dynamic.
   Map<String, dynamic> _convertFirestoreData(dynamic data) {
     if (data == null) return {};
     if (data is DocumentSnapshot) {

@@ -1,4 +1,5 @@
 /// tela de cadastro de professor
+library;
 
 import 'package:flutter/material.dart';
 import '../controllers/cadastro_professor_controller.dart';

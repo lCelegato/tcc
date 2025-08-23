@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/user_controller.dart';
 import '../../controllers/cadastro_aluno_controller.dart';
+import '../../controllers/aula_controller.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_button.dart';
 
@@ -21,6 +22,12 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
 
   final CadastroAlunoController _cadastroAlunoController =
       CadastroAlunoController();
+  final AulaController _aulaController = AulaController();
+
+  // Controles para agendamento de aulas
+  final List<Map<String, dynamic>> _agendamentos = [];
+  int? _diaSelecionado;
+  TimeOfDay? _horarioSelecionado;
 
   bool _isValidEmail(String email) {
     return RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$').hasMatch(email);
@@ -38,14 +45,85 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
       final professor = userController.user;
 
       if (professor != null) {
-        await _cadastroAlunoController.cadastrarAluno(
+        // Primeiro cadastra o aluno
+        final alunoId = await _cadastroAlunoController.cadastrarAluno(
           email: _emailController.text.trim(),
           senha: _passwordController.text.trim(),
           nome: _nameController.text.trim(),
           professorId: professor.id,
           context: context,
         );
+
+        // Se o aluno foi cadastrado com sucesso e há agendamentos
+        if (alunoId != null && _agendamentos.isNotEmpty) {
+          // Criar as aulas agendadas
+          for (final agendamento in _agendamentos) {
+            await _aulaController.criarAula(
+              professorId: professor.id,
+              alunoId: alunoId,
+              diaSemana: agendamento['dia'],
+              horario: agendamento['horario'],
+            );
+          }
+        }
       }
+    }
+  }
+
+  void _adicionarAgendamento() {
+    if (_diaSelecionado != null && _horarioSelecionado != null) {
+      final horarioFormatado =
+          '${_horarioSelecionado!.hour.toString().padLeft(2, '0')}:${_horarioSelecionado!.minute.toString().padLeft(2, '0')}';
+
+      // Verificar se já existe este agendamento
+      final jaExiste = _agendamentos.any((agendamento) =>
+          agendamento['dia'] == _diaSelecionado &&
+          agendamento['horario'] == horarioFormatado);
+
+      if (!jaExiste) {
+        setState(() {
+          _agendamentos.add({
+            'dia': _diaSelecionado!,
+            'horario': horarioFormatado,
+            'nomeDia': AulaController.diasSemana
+                .firstWhere((dia) => dia['valor'] == _diaSelecionado)['nome'],
+          });
+          _diaSelecionado = null;
+          _horarioSelecionado = null;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Este horário já foi adicionado'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+  }
+
+  void _removerAgendamento(int index) {
+    setState(() {
+      _agendamentos.removeAt(index);
+    });
+  }
+
+  Future<void> _selecionarHorario() async {
+    final TimeOfDay? horario = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+
+    if (horario != null) {
+      setState(() {
+        _horarioSelecionado = horario;
+      });
     }
   }
 
@@ -143,6 +221,133 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
                             return null;
                           },
                         ),
+                        const SizedBox(height: 32),
+
+                        // Seção de Agendamento de Aulas
+                        const Divider(),
+                        const Text(
+                          'Agendamento de Aulas',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Seleção de dia e horário
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<int>(
+                                value: _diaSelecionado,
+                                decoration: const InputDecoration(
+                                  labelText: 'Dia da Semana',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: AulaController.diasSemana
+                                    .map((dia) => DropdownMenuItem<int>(
+                                          value: dia['valor'],
+                                          child: Text(dia['nome']),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _diaSelecionado = value;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: _selecionarHorario,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                    horizontal: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _horarioSelecionado != null
+                                            ? '${_horarioSelecionado!.hour.toString().padLeft(2, '0')}:${_horarioSelecionado!.minute.toString().padLeft(2, '0')}'
+                                            : 'Selecionar horário',
+                                        style: TextStyle(
+                                          color: _horarioSelecionado != null
+                                              ? Colors.black
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                      const Icon(Icons.schedule),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Botão para adicionar agendamento
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _adicionarAgendamento,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Adicionar Horário'),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Lista de agendamentos
+                        if (_agendamentos.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Horários Agendados:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                ...List.generate(_agendamentos.length, (index) {
+                                  final agendamento = _agendamentos[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '${agendamento['nomeDia']} - ${agendamento['horario']}',
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                            size: 20,
+                                          ),
+                                          onPressed: () =>
+                                              _removerAgendamento(index),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
                         const SizedBox(height: 24),
                         AppButton(
                           label: 'Cadastrar Aluno',

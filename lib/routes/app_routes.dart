@@ -35,6 +35,8 @@ import '../views/aluno/aluno_home_screen.dart';
 import '../views/professor/meus_alunos_screen.dart';
 import '../views/professor/detalhes_aluno_screen.dart';
 import '../views/professor/register_aluno_screen.dart';
+import '../views/professor/gerenciar_aulas_screen.dart';
+import '../views/aluno/minhas_aulas_screen.dart';
 import '../models/user_model.dart';
 
 class AppRoutes {
@@ -62,6 +64,12 @@ class AppRoutes {
   /// Tela de detalhes do aluno
   static const String detalhesAluno = '/detalhes-aluno';
 
+  /// Tela de gerenciar aulas do professor
+  static const String gerenciarAulas = '/gerenciar-aulas';
+
+  /// Tela de minhas aulas do aluno
+  static const String minhasAulas = '/minhas-aulas';
+
   /// Mapa de rotas nomeadas para uso no MaterialApp
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),
@@ -70,6 +78,8 @@ class AppRoutes {
         professorHome: (context) => const ProfessorHomeScreen(),
         alunoHome: (context) => const AlunoHomeScreen(),
         meusAlunos: (context) => const MeusAlunosScreen(),
+        gerenciarAulas: (context) => const GerenciarAulasScreen(),
+        minhasAulas: (context) => const MinhasAulasScreen(),
       };
 
   /// Geração de rotas dinâmicas

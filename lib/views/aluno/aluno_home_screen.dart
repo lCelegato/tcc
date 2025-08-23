@@ -8,6 +8,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
+import '../../routes/app_routes.dart';
 
 class AlunoHomeScreen extends StatefulWidget {
   const AlunoHomeScreen({super.key});
@@ -48,7 +49,7 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
       case 0:
         return ListView.builder(
           padding: const EdgeInsets.all(16.0),
-          itemCount: 5,
+          itemCount: 1,
           itemBuilder: (context, index) {
             return Card(
               margin: const EdgeInsets.only(bottom: 16.0),
@@ -57,19 +58,30 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Aula ${index + 1}',
-                      style: const TextStyle(
+                    const Text(
+                      'Minhas Aulas',
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Descrição provisória da aula ${index + 1}. Este é um texto de exemplo que será substituído pelo conteúdo real das aulas.',
+                      'Veja seus horários de aula semanais',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, AppRoutes.minhasAulas);
+                        },
+                        icon: const Icon(Icons.schedule),
+                        label: const Text('Ver Cronograma'),
                       ),
                     ),
                   ],

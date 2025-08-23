@@ -55,7 +55,7 @@ class ProfessorHomeScreen extends StatelessWidget {
               icon: Icons.class_,
               color: Colors.blue,
               onTap: () {
-                // TODO: Implementar navegação para gerenciamento de aulas
+                Navigator.pushNamed(context, AppRoutes.gerenciarAulas);
               },
             ),
             MenuCard(

@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Usuários: cada um só pode ler/escrever seu próprio documento
+    match /usuarios/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Professores: leitura/listagem pública, escrita só autenticado dono
+    match /professores/{userId} {
+      allow read, list: if true; // Permite leitura/listagem para todos, inclusive não autenticados
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Alunos: o próprio aluno pode criar e visualizar,
+    // apenas o professor vinculado pode ler, editar e excluir o aluno
+    match /alunos/{userId} {
+      allow create, read: if isAuthenticated() && isOwner(userId);
+      allow read, list: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+    }
+
+    // Aulas: o professor pode criar, ler, atualizar e excluir aulas dos seus alunos
+    // o aluno pode ler suas próprias aulas
+    // professores podem listar aulas para gerenciamento
+    match /aulas/{aulaId} {
+      // Professor pode gerenciar todas as aulas que ele criou
+      allow read, update, delete: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+      
+      // Professores podem listar aulas (para tela gerenciar aulas)
+      allow list: if isAuthenticated();
+      
+      // Aluno pode ler suas próprias aulas
+      allow read, list: if isAuthenticated() && resource.data.alunoId == request.auth.uid;
+      
+      // Para criação (quando resource.data ainda não existe), verificar se é o professor correto
+      allow create: if isAuthenticated() && request.resource.data.professorId == request.auth.uid;
+    }
+  }
+}

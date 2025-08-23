@@ -1,0 +1,41 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "aulas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "professorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ativo",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "diaSemana",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aulas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "alunoId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ativo",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "diaSemana",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

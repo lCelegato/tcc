@@ -4,6 +4,7 @@
 /// - Ver cronograma semanal de aulas
 /// - Visualizar horários organizados por dia
 /// - Interface simples e clara
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

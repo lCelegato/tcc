@@ -239,7 +239,7 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
                           children: [
                             Expanded(
                               child: DropdownButtonFormField<int>(
-                                value: _diaSelecionado,
+                                initialValue: _diaSelecionado,
                                 decoration: const InputDecoration(
                                   labelText: 'Dia da Semana',
                                   border: OutlineInputBorder(),

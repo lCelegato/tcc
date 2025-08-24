@@ -35,6 +35,7 @@ library;
 import 'package:flutter/material.dart';
 import '../services/user_service.dart';
 import '../models/user_model.dart';
+import 'aula_controller.dart';
 
 class UserController extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -144,11 +145,17 @@ class UserController extends ChangeNotifier {
   // Excluir aluno
   Future<void> excluirAluno(String alunoId, BuildContext context) async {
     try {
+      // Primeiro, remover todas as aulas do aluno
+      final aulaController = AulaController();
+      await aulaController.removerAulasDoAluno(alunoId);
+
+      // Depois, remover o aluno
       await deleteUserProfile(alunoId, 'aluno');
+
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Aluno excluído com sucesso!'),
+          content: Text('Aluno e suas aulas foram excluídos com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );

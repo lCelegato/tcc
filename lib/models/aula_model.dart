@@ -8,6 +8,7 @@
 /// - horario: Horário da aula no formato "HH:mm"
 /// - ativa: Se a aula ainda está ativa no cronograma
 /// - dataCriacao: Data de criação do agendamento
+library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';

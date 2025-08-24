@@ -445,7 +445,7 @@ class _DialogAdicionarAulaState extends State<_DialogAdicionarAula> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<int>(
-            value: _diaSelecionado,
+            initialValue: _diaSelecionado,
             decoration: const InputDecoration(
               labelText: 'Dia da Semana',
               border: OutlineInputBorder(),
@@ -625,7 +625,7 @@ class _DialogEditarAulaState extends State<_DialogEditarAula> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<int>(
-            value: _diaSelecionado,
+            initialValue: _diaSelecionado,
             decoration: const InputDecoration(
               labelText: 'Dia da Semana',
               border: OutlineInputBorder(),

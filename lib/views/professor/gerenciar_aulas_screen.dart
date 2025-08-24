@@ -5,6 +5,7 @@
 /// - Editar horários das aulas
 /// - Remover aulas do cronograma
 /// - Buscar aulas por aluno
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ class GerenciarAulasScreen extends StatefulWidget {
 class _GerenciarAulasScreenState extends State<GerenciarAulasScreen> {
   late AulaController _aulaController;
   String _filtroAluno = '';
-  Map<String, String> _nomesAlunos = {}; // Cache para nomes dos alunos
+  final Map<String, String> _nomesAlunos = {}; // Cache para nomes dos alunos
 
   @override
   void initState() {
@@ -388,7 +389,7 @@ class _DialogEditarAulaState extends State<_DialogEditarAula> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<int>(
-            value: _diaSelecionado,
+            initialValue: _diaSelecionado,
             decoration: const InputDecoration(
               labelText: 'Dia da Semana',
               border: OutlineInputBorder(),

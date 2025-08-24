@@ -85,6 +85,14 @@ class AuthController extends ChangeNotifier {
       final user = _authService.currentUser;
       if (user != null) {
         await _loadUserType(user.uid);
+
+        // Carregar dados completos do usuário no UserController
+        if (context.mounted) {
+          final userController =
+              Provider.of<UserController>(context, listen: false);
+          await userController.loadUserData(user.uid, _userType ?? '');
+        }
+
         if (!context.mounted) return context;
         // Navegar para a tela apropriada baseada no tipo de usuário
         if (_userType == 'professor') {

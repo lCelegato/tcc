@@ -5,6 +5,7 @@
 /// - Validar dados de entrada
 /// - Gerenciar operações CRUD
 /// - Notificar mudanças na UI
+library;
 
 import 'package:flutter/foundation.dart';
 import '../models/aula_model.dart';

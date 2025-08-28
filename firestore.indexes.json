@@ -35,6 +35,42 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "postagens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "professorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ativo",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dataPostagem",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postagens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "alunosDestino",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "ativo",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dataPostagem",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

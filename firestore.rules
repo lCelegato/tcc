@@ -34,13 +34,32 @@ service cloud.firestore {
       // Professor pode gerenciar todas as aulas que ele criou
       allow read, update, delete: if isAuthenticated() && resource.data.professorId == request.auth.uid;
       
-      // Professores podem listar aulas (para tela gerenciar aulas)
-      allow list: if isAuthenticated();
+      // Professores podem listar suas próprias aulas
+      allow list: if isAuthenticated() && resource.data.professorId == request.auth.uid;
       
-      // Aluno pode ler suas próprias aulas
+      // Aluno pode ler e listar suas próprias aulas
       allow read, list: if isAuthenticated() && resource.data.alunoId == request.auth.uid;
       
       // Para criação (quando resource.data ainda não existe), verificar se é o professor correto
+      allow create: if isAuthenticated() && request.resource.data.professorId == request.auth.uid;
+    }
+
+    // Postagens: o professor pode criar, ler, atualizar e excluir suas postagens
+    // o aluno pode ler as postagens destinadas a ele
+    match /postagens/{postagemId} {
+      // Professor pode gerenciar todas as postagens que ele criou
+      allow read, update, delete: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+      
+      // Professores podem listar suas próprias postagens
+      allow list: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+      
+      // Aluno pode ler postagens onde ele está na lista de destinatários
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.alunosDestino;
+      
+      // Alunos podem listar postagens onde estão incluídos
+      allow list: if isAuthenticated() && request.auth.uid in resource.data.alunosDestino;
+      
+      // Para criação, verificar se é o professor correto
       allow create: if isAuthenticated() && request.resource.data.professorId == request.auth.uid;
     }
   }

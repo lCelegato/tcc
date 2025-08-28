@@ -96,9 +96,9 @@ class AuthController extends ChangeNotifier {
         if (!context.mounted) return context;
         // Navegar para a tela apropriada baseada no tipo de usuário
         if (_userType == 'professor') {
-          Navigator.pushReplacementNamed(context, AppRoutes.professorHome);
+          Navigator.pushReplacementNamed(context, AppRoutes.professorDashboard);
         } else if (_userType == 'aluno') {
-          Navigator.pushReplacementNamed(context, AppRoutes.alunoHome);
+          Navigator.pushReplacementNamed(context, AppRoutes.alunoDashboard);
         }
       }
     } finally {

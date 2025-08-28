@@ -36,8 +36,13 @@ import '../views/professor/meus_alunos_screen.dart';
 import '../views/professor/detalhes_aluno_screen.dart';
 import '../views/professor/register_aluno_screen.dart';
 import '../views/professor/gerenciar_aulas_screen.dart';
+import '../views/professor/criar_postagem_screen.dart';
+import '../views/professor/minhas_postagens_screen.dart';
 import '../views/aluno/minhas_aulas_screen.dart';
+import '../views/aluno/postagens_aluno_screen.dart';
+import '../views/aluno/detalhes_postagem_screen.dart';
 import '../models/user_model.dart';
+import '../models/postagem_model.dart';
 
 class AppRoutes {
   /// Definição centralizada das rotas nomeadas do app.
@@ -55,8 +60,14 @@ class AppRoutes {
   /// Tela de home do professor
   static const String professorHome = '/professor-home';
 
+  /// Tela principal do professor com navegação
+  static const String professorDashboard = '/professor-dashboard';
+
   /// Tela de home do aluno
   static const String alunoHome = '/aluno-home';
+
+  /// Tela principal do aluno com navegação
+  static const String alunoDashboard = '/aluno-dashboard';
 
   /// Tela de listagem de alunos do professor
   static const String meusAlunos = '/meus-alunos';
@@ -67,8 +78,20 @@ class AppRoutes {
   /// Tela de gerenciar aulas do professor
   static const String gerenciarAulas = '/gerenciar-aulas';
 
+  /// Tela de criar postagem
+  static const String criarPostagem = '/criar-postagem';
+
+  /// Tela de postagens do professor
+  static const String minhasPostagens = '/minhas-postagens';
+
   /// Tela de minhas aulas do aluno
   static const String minhasAulas = '/minhas-aulas';
+
+  /// Tela de postagens para o aluno
+  static const String postagensAluno = '/postagens-aluno';
+
+  /// Tela de detalhes da postagem
+  static const String detalhesPostagem = '/detalhes-postagem';
 
   /// Mapa de rotas nomeadas para uso no MaterialApp
   static Map<String, WidgetBuilder> get routes => {
@@ -76,10 +99,15 @@ class AppRoutes {
         register: (context) => const RegisterScreen(),
         registerAluno: (context) => const RegisterAlunoScreen(),
         professorHome: (context) => const ProfessorHomeScreen(),
+        professorDashboard: (context) => const ProfessorHomeScreen(),
         alunoHome: (context) => const AlunoHomeScreen(),
+        alunoDashboard: (context) => const AlunoHomeScreen(),
         meusAlunos: (context) => const MeusAlunosScreen(),
         gerenciarAulas: (context) => const GerenciarAulasScreen(),
+        criarPostagem: (context) => const CriarPostagemScreen(),
+        minhasPostagens: (context) => const MinhasPostagensScreen(),
         minhasAulas: (context) => const MinhasAulasScreen(),
+        postagensAluno: (context) => const PostagensAlunoScreen(),
       };
 
   /// Geração de rotas dinâmicas
@@ -88,6 +116,12 @@ class AppRoutes {
       final aluno = settings.arguments as UserModel;
       return MaterialPageRoute(
         builder: (context) => DetalhesAlunoScreen(aluno: aluno),
+      );
+    }
+    if (settings.name == detalhesPostagem) {
+      final postagem = settings.arguments as PostagemModel;
+      return MaterialPageRoute(
+        builder: (context) => DetalhesPostagemScreen(postagem: postagem),
       );
     }
     return MaterialPageRoute(

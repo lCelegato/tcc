@@ -8,7 +8,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
-import '../../routes/app_routes.dart';
+import 'postagens_aluno_screen.dart';
+import 'cronograma_aluno_screen.dart';
 
 class AlunoHomeScreen extends StatefulWidget {
   const AlunoHomeScreen({super.key});
@@ -47,55 +48,13 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
   Widget _buildBody() {
     switch (_selectedIndex) {
       case 0:
-        return ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: 1,
-          itemBuilder: (context, index) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16.0),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Minhas Aulas',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Veja seus horários de aula semanais',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.minhasAulas);
-                        },
-                        icon: const Icon(Icons.schedule),
-                        label: const Text('Ver Cronograma'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        return const PostagensAlunoScreen();
       case 1:
-        return const Center(child: Text('Agenda'));
+        return const CronogramaAlunoScreen();
       case 2:
-        return const Center(child: Text('Progresso'));
+        return const Center(child: Text('Progresso em desenvolvimento'));
       case 3:
-        return const Center(child: Text('Materiais'));
+        return const Center(child: Text('Materiais em desenvolvimento'));
       default:
         return const Center(child: Text('Página não encontrada'));
     }
@@ -122,12 +81,12 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.class_),
-            label: 'Aulas',
+            icon: Icon(Icons.article),
+            label: 'Postagens',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Agenda',
+            icon: Icon(Icons.schedule),
+            label: 'Cronograma',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.trending_up),

@@ -1,7 +1,18 @@
+/// Controller para cadastro de alunos pelo professor
+///
+/// Responsabilidades:
+/// - Validar dados do aluno
+/// - Criar conta do aluno
+/// - Gerenciar re-autenticação do professor
+/// - Navegação pós-cadastro
+library;
+
 import 'package:flutter/material.dart';
 import '../services/user_service.dart';
 import '../controllers/auth_controller.dart';
 import '../routes/app_routes.dart';
+import '../utils/validation_utils.dart';
+import '../widgets/dialog_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastroAlunoController extends ChangeNotifier {
@@ -9,15 +20,30 @@ class CadastroAlunoController extends ChangeNotifier {
   final AuthController _authController = AuthController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<bool> validarSenhaProfessor(
-      String email, String senha, BuildContext context) async {
-    try {
-      await _authController.signIn(email, senha, context);
-      //await _authController.signOut();
-      return true;
-    } catch (_) {
-      return false;
-    }
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  /// Valida os dados de entrada do aluno
+  String? validarDadosAluno({
+    required String nome,
+    required String email,
+    required String senha,
+  }) {
+    final nomeError = ValidationUtils.getNameErrorMessage(nome);
+    if (nomeError.isNotEmpty) return nomeError;
+
+    final emailError = ValidationUtils.getEmailErrorMessage(email);
+    if (emailError.isNotEmpty) return emailError;
+
+    final senhaError = ValidationUtils.getPasswordErrorMessage(senha);
+    if (senhaError.isNotEmpty) return senhaError;
+
+    return null;
   }
 
   Future<String?> cadastrarAluno({
@@ -27,7 +53,21 @@ class CadastroAlunoController extends ChangeNotifier {
     required String professorId,
     required BuildContext context,
   }) async {
+    // Validar dados de entrada
+    final validationError = validarDadosAluno(
+      nome: nome,
+      email: email,
+      senha: senha,
+    );
+
+    if (validationError != null) {
+      _mostrarErro(context, validationError);
+      return null;
+    }
+
     try {
+      _setLoading(true);
+
       // Salvar dados do usuário atual (professor)
       final User? currentUser = _auth.currentUser;
       if (currentUser == null) {
@@ -54,8 +94,16 @@ class CadastroAlunoController extends ChangeNotifier {
       // Mostrar dialog perguntando a senha do professor para relogar
       if (!context.mounted) return null;
 
-      final senhaProfessor =
-          await _mostrarDialogSenhaProfessor(context, professorEmail);
+      final senhaProfessor = await DialogUtils.showTextInputDialog(
+        context: context,
+        title: 'Confirmação Necessária',
+        message: 'Para continuar logado, confirme sua senha:\n$professorEmail',
+        hintText: 'Sua senha',
+        obscureText: true,
+        validator: (value) =>
+            value?.trim().isEmpty ?? true ? 'Senha é obrigatória' : null,
+      );
+
       if (senhaProfessor == null) {
         // Se cancelou, vai para login
         Navigator.pushNamedAndRemoveUntil(
@@ -67,100 +115,67 @@ class CadastroAlunoController extends ChangeNotifier {
       }
 
       // Tentar fazer login do professor novamente
-      try {
-        await _auth.signInWithEmailAndPassword(
-          email: professorEmail,
-          password: senhaProfessor,
-        );
+      await _relogarProfessor(context, professorEmail, senhaProfessor);
 
-        // Login bem-sucedido - mostrar mensagem e voltar para meus alunos
-        if (!context.mounted) return alunoId;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Aluno cadastrado com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      return alunoId;
+    } catch (e) {
+      if (!context.mounted) return null;
+      _mostrarErro(context, 'Erro ao criar conta de aluno: $e');
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Re-autentica o professor após criar aluno
+  Future<void> _relogarProfessor(
+    BuildContext context,
+    String professorEmail,
+    String senha,
+  ) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: professorEmail,
+        password: senha,
+      );
+
+      // Login bem-sucedido - mostrar mensagem e voltar para meus alunos
+      if (context.mounted) {
+        _mostrarSucesso(context, 'Aluno cadastrado com sucesso!');
 
         // Voltar para meus alunos
         Navigator.pushReplacementNamed(context, AppRoutes.meusAlunos);
-      } catch (e) {
-        // Senha incorreta - mostrar erro e ir para login
-        if (!context.mounted) return alunoId;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Senha incorreta. Faça login novamente.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      }
+    } catch (e) {
+      // Senha incorreta - mostrar erro e ir para login
+      if (context.mounted) {
+        _mostrarErro(context, 'Senha incorreta. Faça login novamente.');
         Navigator.pushNamedAndRemoveUntil(
           context,
           AppRoutes.login,
           (route) => false,
         );
       }
-
-      return alunoId;
-    } catch (e) {
-      if (!context.mounted) return null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao criar conta de aluno: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return null;
     }
   }
 
-  Future<String?> _mostrarDialogSenhaProfessor(
-      BuildContext context, String professorEmail) async {
-    final TextEditingController senhaController = TextEditingController();
+  /// Exibe mensagem de erro
+  void _mostrarErro(BuildContext context, String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
 
-    return showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmação Necessária'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Para continuar logado, confirme sua senha:'),
-              const SizedBox(height: 8),
-              Text(
-                professorEmail,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: senhaController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Sua senha',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final senha = senhaController.text.trim();
-                if (senha.isNotEmpty) {
-                  Navigator.of(context).pop(senha);
-                }
-              },
-              child: const Text('Confirmar'),
-            ),
-          ],
-        );
-      },
+  /// Exibe mensagem de sucesso
+  void _mostrarSucesso(BuildContext context, String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 }

@@ -27,6 +27,8 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/user_controller.dart';
+import 'controllers/postagem_controller.dart';
+import 'controllers/aula_controller.dart';
 import 'routes/app_routes.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -48,6 +50,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => UserController()),
+        ChangeNotifierProvider(create: (_) => PostagemController()),
+        ChangeNotifierProvider(create: (_) => AulaController()),
       ],
       child: MaterialApp(
         title: 'Sistema de Aulas',

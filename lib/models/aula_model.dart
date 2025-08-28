@@ -12,6 +12,7 @@ library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/constants.dart';
 
 class AulaModel {
   final String id;
@@ -84,48 +85,10 @@ class AulaModel {
   }
 
   /// Retorna o nome do dia da semana
-  String get nomeDiaSemana {
-    switch (diaSemana) {
-      case 1:
-        return 'Segunda-feira';
-      case 2:
-        return 'Terça-feira';
-      case 3:
-        return 'Quarta-feira';
-      case 4:
-        return 'Quinta-feira';
-      case 5:
-        return 'Sexta-feira';
-      case 6:
-        return 'Sábado';
-      case 7:
-        return 'Domingo';
-      default:
-        return 'Dia inválido';
-    }
-  }
+  String get nomeDiaSemana => diaSemana.nomeDiaSemana;
 
   /// Retorna o nome abreviado do dia da semana
-  String get nomeDiaAbreviado {
-    switch (diaSemana) {
-      case 1:
-        return 'Seg';
-      case 2:
-        return 'Ter';
-      case 3:
-        return 'Qua';
-      case 4:
-        return 'Qui';
-      case 5:
-        return 'Sex';
-      case 6:
-        return 'Sáb';
-      case 7:
-        return 'Dom';
-      default:
-        return 'Inv';
-    }
-  }
+  String get nomeDiaAbreviado => diaSemana.nomeDiaAbreviado;
 
   @override
   bool operator ==(Object other) =>

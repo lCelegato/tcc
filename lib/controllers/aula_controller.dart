@@ -10,6 +10,7 @@ library;
 import 'package:flutter/foundation.dart';
 import '../models/aula_model.dart';
 import '../services/aula_service.dart';
+import '../utils/constants.dart';
 
 enum AulaState { idle, loading, success, error }
 
@@ -198,7 +199,7 @@ class AulaController extends ChangeNotifier {
     }
 
     // Validar formato do horário (HH:mm)
-    final regex = RegExp(r'^\d{2}:\d{2}$');
+    final regex = RegExp(AppConstants.regexHorario);
     if (!regex.hasMatch(horario)) {
       return false;
     }
@@ -219,15 +220,7 @@ class AulaController extends ChangeNotifier {
   }
 
   /// Lista com os dias da semana para seleção
-  static List<Map<String, dynamic>> get diasSemana => [
-        {'valor': 1, 'nome': 'Segunda-feira', 'abrev': 'Seg'},
-        {'valor': 2, 'nome': 'Terça-feira', 'abrev': 'Ter'},
-        {'valor': 3, 'nome': 'Quarta-feira', 'abrev': 'Qua'},
-        {'valor': 4, 'nome': 'Quinta-feira', 'abrev': 'Qui'},
-        {'valor': 5, 'nome': 'Sexta-feira', 'abrev': 'Sex'},
-        {'valor': 6, 'nome': 'Sábado', 'abrev': 'Sáb'},
-        {'valor': 7, 'nome': 'Domingo', 'abrev': 'Dom'},
-      ];
+  static List<Map<String, dynamic>> get diasSemana => AppConstants.diasSemana;
 
   /// Reseta o estado do controller
   void resetState() {

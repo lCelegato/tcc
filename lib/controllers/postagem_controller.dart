@@ -91,8 +91,15 @@ class PostagemController extends ChangeNotifier {
   /// Carrega postagens do professor
   Future<void> carregarPostagensProfessor(String professorId) async {
     try {
+      debugPrint(
+          'Controller: Iniciando carregamento de postagens para professor ID: $professorId');
       _setState(PostagemState.loading);
       _postagens = await _postagemService.buscarPostagensProfessor(professorId);
+      debugPrint('Controller: Postagens carregadas: ${_postagens.length}');
+      for (final postagem in _postagens) {
+        debugPrint(
+            '- ${postagem.titulo} (${postagem.materia}) - ${postagem.dataFormatada}');
+      }
       _setState(PostagemState.success);
     } catch (e) {
       debugPrint('Erro ao carregar postagens do professor: $e');

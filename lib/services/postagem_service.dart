@@ -31,23 +31,33 @@ class PostagemService {
     }
   }
 
-  /// Busca todas as postagens de um professor
-  Future<List<PostagemModel>> buscarPostagensPorProfessor(
+  /// Busca postagens ativas de um professor
+  Future<List<PostagemModel>> buscarPostagensProfessor(
       String professorId) async {
     try {
+      debugPrint('Buscando postagens do professor ID: $professorId');
+
+      // Primeiro buscar sem orderBy para evitar problemas de índice
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('professorId', isEqualTo: professorId)
           .where('ativo', isEqualTo: true)
           .get();
 
-      final postagens = querySnapshot.docs
-          .map((doc) => PostagemModel.fromFirestore(doc))
-          .toList();
+      debugPrint(
+          'Query executada. Documentos encontrados: ${querySnapshot.docs.length}');
 
-      // Ordenar por data de postagem no código local
+      final postagens = querySnapshot.docs.map((doc) {
+        debugPrint('Documento encontrado: ${doc.id}');
+        final data = doc.data();
+        debugPrint('Dados do documento: $data');
+        return PostagemModel.fromFirestore(doc);
+      }).toList();
+
+      // Ordenar por data no código local
       postagens.sort((a, b) => b.dataPostagem.compareTo(a.dataPostagem));
 
+      debugPrint('Total de postagens processadas: ${postagens.length}');
       return postagens;
     } catch (e) {
       debugPrint('Erro ao buscar postagens do professor: $e');
@@ -277,8 +287,8 @@ class PostagemService {
     }
   }
 
-  /// Busca todas as postagens de um professor específico
-  Future<List<PostagemModel>> buscarPostagensProfessor(
+  /// Busca todas as postagens de um professor (incluindo ativas e inativas)
+  Future<List<PostagemModel>> buscarTodasPostagensProfessor(
       String professorId) async {
     try {
       final querySnapshot = await _firestore
@@ -291,7 +301,7 @@ class PostagemService {
           .map((doc) => PostagemModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar postagens do professor: $e');
+      debugPrint('Erro ao buscar todas as postagens do professor: $e');
       return [];
     }
   }

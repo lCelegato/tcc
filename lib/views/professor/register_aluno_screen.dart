@@ -235,58 +235,72 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
                         const SizedBox(height: 16),
 
                         // Seleção de dia e horário
-                        Row(
+                        Column(
                           children: [
-                            Expanded(
-                              child: DropdownButtonFormField<int>(
-                                initialValue: _diaSelecionado,
-                                decoration: const InputDecoration(
-                                  labelText: 'Dia da Semana',
-                                  border: OutlineInputBorder(),
+                            DropdownButtonFormField<int>(
+                              initialValue: _diaSelecionado,
+                              decoration: InputDecoration(
+                                labelText: 'Dia',
+                                border: const OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]!),
                                 ),
-                                items: AulaController.diasSemana
-                                    .map((dia) => DropdownMenuItem<int>(
-                                          value: dia['valor'],
-                                          child: Text(dia['nome']),
-                                        ))
-                                    .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _diaSelecionado = value;
-                                  });
-                                },
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]!),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]!),
+                                ),
                               ),
+                              validator: (value) {
+                                return null; // Sem validação obrigatória
+                              },
+                              items: AulaController.diasSemana
+                                  .map((dia) => DropdownMenuItem<int>(
+                                        value: dia['valor'],
+                                        child: Text(dia['nome']),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _diaSelecionado = value;
+                                });
+                              },
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: _selecionarHorario,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                    horizontal: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        _horarioSelecionado != null
-                                            ? '${_horarioSelecionado!.hour.toString().padLeft(2, '0')}:${_horarioSelecionado!.minute.toString().padLeft(2, '0')}'
-                                            : 'Selecionar horário',
-                                        style: TextStyle(
-                                          color: _horarioSelecionado != null
-                                              ? Colors.black
-                                              : Colors.grey[600],
-                                        ),
+                            const SizedBox(height: 16),
+                            GestureDetector(
+                              onTap: _selecionarHorario,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _horarioSelecionado != null
+                                          ? '${_horarioSelecionado!.hour.toString().padLeft(2, '0')}:${_horarioSelecionado!.minute.toString().padLeft(2, '0')}'
+                                          : 'Horário',
+                                      style: TextStyle(
+                                        color: _horarioSelecionado != null
+                                            ? Colors.black
+                                            : Colors.grey[600],
                                       ),
-                                      const Icon(Icons.schedule),
-                                    ],
-                                  ),
+                                    ),
+                                    const Icon(Icons.schedule),
+                                  ],
                                 ),
                               ),
                             ),

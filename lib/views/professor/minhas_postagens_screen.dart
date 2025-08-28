@@ -73,6 +73,7 @@ class _MinhasPostagensScreenState extends State<MinhasPostagensScreen> {
     );
 
     if (confirmar == true) {
+      if (!mounted) return;
       final userController = context.read<UserController>();
       final postagemController = context.read<PostagemController>();
       final usuario = userController.user;
@@ -83,21 +84,23 @@ class _MinhasPostagensScreenState extends State<MinhasPostagensScreen> {
           usuario.id,
         );
 
-        if (sucesso) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Postagem removida com sucesso!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  'Erro ao remover postagem: ${postagemController.errorMessage}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+        if (mounted) {
+          if (sucesso) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Postagem removida com sucesso!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Erro ao remover postagem: ${postagemController.errorMessage}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       }
     }

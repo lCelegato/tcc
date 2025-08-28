@@ -293,7 +293,7 @@ class _GerenciarAulasScreenState extends State<GerenciarAulasScreen> {
         aula: aula,
         onAtualizarAula: (aulaAtualizada) async {
           final sucesso = await _aulaController.atualizarAula(aulaAtualizada);
-          if (sucesso && mounted) {
+          if (sucesso && context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Aula atualizada com sucesso!'),
@@ -328,7 +328,7 @@ class _GerenciarAulasScreenState extends State<GerenciarAulasScreen> {
                 aula.id,
                 aula.professorId,
               );
-              if (sucesso && mounted) {
+              if (sucesso && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Aula removida com sucesso!'),

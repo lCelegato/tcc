@@ -27,7 +27,7 @@ class _CriarPostagemScreenState extends State<CriarPostagemScreen> {
   final _conteudoController = TextEditingController();
 
   String? _materiaSelecionada;
-  List<String> _alunosSelecionados = [];
+  final List<String> _alunosSelecionados = [];
   List<UserModel> _alunosDisponiveis = [];
   bool _isLoading = false;
 
@@ -95,7 +95,9 @@ class _CriarPostagemScreenState extends State<CriarPostagemScreen> {
 
     if (sucesso) {
       _mostrarSucesso('Postagem criada com sucesso!');
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     } else {
       _mostrarErro(postagemController.errorMessage);
     }

@@ -106,16 +106,20 @@ class CadastroAlunoController extends ChangeNotifier {
 
       if (senhaProfessor == null) {
         // Se cancelou, vai para login
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.login,
-          (route) => false,
-        );
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.login,
+            (route) => false,
+          );
+        }
         return alunoId;
       }
 
       // Tentar fazer login do professor novamente
-      await _relogarProfessor(context, professorEmail, senhaProfessor);
+      if (context.mounted) {
+        await _relogarProfessor(context, professorEmail, senhaProfessor);
+      }
 
       return alunoId;
     } catch (e) {

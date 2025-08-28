@@ -20,7 +20,7 @@ class PostagemController extends ChangeNotifier {
   String _errorMessage = '';
   List<PostagemModel> _postagens = [];
   Map<String, List<PostagemModel>> _postagensAgrupadas = {};
-  Map<String, List<PostagemModel>> _postagensAgrupadasPorMateria = {};
+  final Map<String, List<PostagemModel>> _postagensAgrupadasPorMateria = {};
   PostagemModel? _postagemSelecionada;
 
   // Getters

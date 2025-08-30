@@ -15,6 +15,8 @@ import '../../models/postagem_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/image_manager_widget.dart';
+import '../../widgets/documento_manager_widget.dart';
 import '../../utils/validation_utils.dart';
 
 class DetalhePostagemScreen extends StatefulWidget {
@@ -36,6 +38,8 @@ class _DetalhePostagemScreenState extends State<DetalhePostagemScreen> {
 
   String _materiaSelecionada = '';
   List<String> _alunosSelecionados = [];
+  List<String> _imagensSelecionadas = [];
+  List<Map<String, dynamic>> _documentosSelecionados = [];
   List<UserModel> _todosAlunos = [];
   List<UserModel> _alunosNaPostagem = [];
   bool _isEditing = false;
@@ -52,6 +56,8 @@ class _DetalhePostagemScreenState extends State<DetalhePostagemScreen> {
     _conteudoController.text = widget.postagem.conteudo;
     _materiaSelecionada = widget.postagem.materia;
     _alunosSelecionados = List.from(widget.postagem.alunosDestino);
+    _imagensSelecionadas = List.from(widget.postagem.imagens ?? []);
+    _documentosSelecionados = List.from(widget.postagem.documentos ?? []);
     _carregarAlunos();
   }
 
@@ -96,6 +102,8 @@ class _DetalhePostagemScreenState extends State<DetalhePostagemScreen> {
       conteudo: _conteudoController.text.trim(),
       materia: _materiaSelecionada,
       alunosDestino: _alunosSelecionados,
+      imagens: _imagensSelecionadas,
+      documentos: _documentosSelecionados,
     );
 
     final sucesso =
@@ -328,6 +336,42 @@ class _DetalhePostagemScreenState extends State<DetalhePostagemScreen> {
                               ],
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Documentos da postagem
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: DocumentoManagerWidget(
+                          documentos: _documentosSelecionados,
+                          onDocumentosChanged: (novosDocumentos) {
+                            setState(() {
+                              _documentosSelecionados = novosDocumentos;
+                            });
+                          },
+                          podeEditar: _isEditing,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Imagens da postagem
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: ImageManagerWidget(
+                          imagensExistentes: _imagensSelecionadas,
+                          onImagensChanged: (novasImagens) {
+                            setState(() {
+                              _imagensSelecionadas = novasImagens;
+                            });
+                          },
+                          isEditing: _isEditing,
                         ),
                       ),
                     ),

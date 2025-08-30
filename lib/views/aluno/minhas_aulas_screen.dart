@@ -20,20 +20,18 @@ class MinhasAulasScreen extends StatefulWidget {
 }
 
 class _MinhasAulasScreenState extends State<MinhasAulasScreen> {
-  late AulaController _aulaController;
-
   @override
   void initState() {
     super.initState();
-    _aulaController = AulaController();
     _carregarAulas();
   }
 
   void _carregarAulas() {
     final userController = Provider.of<UserController>(context, listen: false);
+    final aulaController = Provider.of<AulaController>(context, listen: false);
     final aluno = userController.user;
     if (aluno != null) {
-      _aulaController.carregarAulasAluno(aluno.id);
+      aulaController.carregarAulasAluno(aluno.id);
     }
   }
 
@@ -51,68 +49,65 @@ class _MinhasAulasScreenState extends State<MinhasAulasScreen> {
           ),
         ],
       ),
-      body: ChangeNotifierProvider.value(
-        value: _aulaController,
-        child: Consumer<AulaController>(
-          builder: (context, controller, child) {
-            if (controller.state == AulaState.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+      body: Consumer<AulaController>(
+        builder: (context, controller, child) {
+          if (controller.state == AulaState.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (controller.state == AulaState.error) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error, size: 64, color: Colors.red[300]),
-                    const SizedBox(height: 16),
-                    Text(
-                      controller.errorMessage,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _carregarAulas,
-                      child: const Text('Tentar Novamente'),
-                    ),
-                  ],
-                ),
-              );
-            }
+          if (controller.state == AulaState.error) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, size: 64, color: Colors.red[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    controller.errorMessage,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _carregarAulas,
+                    child: const Text('Tentar Novamente'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-            final aulasPorDia = controller.agruparAulasPorDia();
+          final aulasPorDia = controller.agruparAulasPorDia();
 
-            return aulasPorDia.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.school, size: 64, color: Colors.grey[400]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nenhuma aula agendada',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey[600],
-                          ),
+          return aulasPorDia.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.school, size: 64, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Nenhuma aula agendada',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[600],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Entre em contato com seu professor',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Entre em contato com seu professor',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[500],
                         ),
-                      ],
-                    ),
-                  )
-                : ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: _construirCronogramaSemanal(aulasPorDia),
-                  );
-          },
-        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: _construirCronogramaSemanal(aulasPorDia),
+                );
+        },
       ),
     );
   }
@@ -196,6 +191,18 @@ class _MinhasAulasScreenState extends State<MinhasAulasScreen> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        '• ${aula.titulo}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ))
@@ -263,7 +270,7 @@ class _MinhasAulasScreenState extends State<MinhasAulasScreen> {
 
   @override
   void dispose() {
-    _aulaController.dispose();
+    // Não precisa mais do dispose pois usa Provider global
     super.dispose();
   }
 }

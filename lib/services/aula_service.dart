@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import '../models/aula_model.dart';
 
 class AulaService {
@@ -16,10 +15,8 @@ class AulaService {
       );
 
       await aulaRef.set(aulaComId.toMap());
-      debugPrint('Aula criada com sucesso: ${aulaRef.id}');
       return aulaRef.id;
     } catch (e) {
-      debugPrint('Erro ao criar aula: $e');
       rethrow;
     }
   }
@@ -35,7 +32,6 @@ class AulaService {
 
       return query.docs.map((doc) => AulaModel.fromMap(doc.data())).toList();
     } catch (e) {
-      debugPrint('Erro ao buscar aulas do professor: $e');
       return [];
     }
   }
@@ -49,9 +45,13 @@ class AulaService {
           .where('ativa', isEqualTo: true)
           .get();
 
-      return query.docs.map((doc) => AulaModel.fromMap(doc.data())).toList();
+      final aulas = query.docs.map((doc) {
+        final data = doc.data();
+        return AulaModel.fromMap(data);
+      }).toList();
+
+      return aulas;
     } catch (e) {
-      debugPrint('Erro ao buscar aulas do aluno: $e');
       return [];
     }
   }
@@ -63,9 +63,7 @@ class AulaService {
           .collection(_collection)
           .doc(aula.id)
           .update(aula.toMap());
-      debugPrint('Aula atualizada com sucesso: ${aula.id}');
     } catch (e) {
-      debugPrint('Erro ao atualizar aula: $e');
       rethrow;
     }
   }
@@ -77,9 +75,7 @@ class AulaService {
           .collection(_collection)
           .doc(aulaId)
           .update({'ativa': false});
-      debugPrint('Aula desativada com sucesso: $aulaId');
     } catch (e) {
-      debugPrint('Erro ao desativar aula: $e');
       rethrow;
     }
   }
@@ -98,9 +94,7 @@ class AulaService {
       }
 
       await batch.commit();
-      debugPrint('Aulas do aluno desativadas: $alunoId');
     } catch (e) {
-      debugPrint('Erro ao remover aulas do aluno: $e');
       rethrow;
     }
   }
@@ -120,7 +114,6 @@ class AulaService {
 
       return query.docs.map((doc) => AulaModel.fromMap(doc.data())).toList();
     } catch (e) {
-      debugPrint('Erro ao buscar aulas específicas: $e');
       return [];
     }
   }
@@ -128,13 +121,10 @@ class AulaService {
   /// Busca informações do aluno pelo ID
   Future<Map<String, dynamic>?> buscarDadosAluno(String alunoId) async {
     try {
-      debugPrint('Buscando dados do aluno: $alunoId');
-
       // Buscar primeiro em alunos (onde os alunos são realmente salvos)
       final alunoDoc = await _firestore.collection('alunos').doc(alunoId).get();
 
       if (alunoDoc.exists) {
-        debugPrint('Aluno encontrado na colecao alunos: ${alunoDoc.data()}');
         return alunoDoc.data();
       }
 
@@ -143,15 +133,21 @@ class AulaService {
           await _firestore.collection('usuarios').doc(alunoId).get();
 
       if (alunoDoc2.exists) {
-        debugPrint('Aluno encontrado na colecao usuarios: ${alunoDoc2.data()}');
         return alunoDoc2.data();
       }
 
-      debugPrint('Aluno nao encontrado em nenhuma colecao: $alunoId');
       return null;
     } catch (e) {
-      debugPrint('Erro ao buscar dados do aluno: $e');
       return null;
+    }
+  }
+
+  /// Remove uma aula específica permanentemente
+  Future<void> deletarAula(String aulaId) async {
+    try {
+      await _firestore.collection(_collection).doc(aulaId).delete();
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -7,7 +7,6 @@
 library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import '../models/postagem_model.dart';
 
 class PostagemService {
@@ -17,16 +16,11 @@ class PostagemService {
   /// Cria uma nova postagem
   Future<String> criarPostagem(PostagemModel postagem) async {
     try {
-      debugPrint(
-          'Criando postagem no Firestore para alunos: ${postagem.alunosDestino}');
-      debugPrint('Dados da postagem: ${postagem.toFirestore()}');
-
       final docRef =
           await _firestore.collection(_collection).add(postagem.toFirestore());
-      debugPrint('Postagem criada com sucesso! ID: ${docRef.id}');
+
       return docRef.id;
     } catch (e) {
-      debugPrint('Erro ao criar postagem: $e');
       rethrow;
     }
   }
@@ -35,8 +29,6 @@ class PostagemService {
   Future<List<PostagemModel>> buscarPostagensProfessor(
       String professorId) async {
     try {
-      debugPrint('Buscando postagens do professor ID: $professorId');
-
       // Primeiro buscar sem orderBy para evitar problemas de índice
       final querySnapshot = await _firestore
           .collection(_collection)
@@ -44,23 +36,15 @@ class PostagemService {
           .where('ativo', isEqualTo: true)
           .get();
 
-      debugPrint(
-          'Query executada. Documentos encontrados: ${querySnapshot.docs.length}');
-
       final postagens = querySnapshot.docs.map((doc) {
-        debugPrint('Documento encontrado: ${doc.id}');
-        final data = doc.data();
-        debugPrint('Dados do documento: $data');
         return PostagemModel.fromFirestore(doc);
       }).toList();
 
       // Ordenar por data no código local
       postagens.sort((a, b) => b.dataPostagem.compareTo(a.dataPostagem));
 
-      debugPrint('Total de postagens processadas: ${postagens.length}');
       return postagens;
     } catch (e) {
-      debugPrint('Erro ao buscar postagens do professor: $e');
       return [];
     }
   }
@@ -68,30 +52,21 @@ class PostagemService {
   /// Busca postagens para um aluno específico
   Future<List<PostagemModel>> buscarPostagensParaAluno(String alunoId) async {
     try {
-      debugPrint('Buscando postagens para o aluno ID: $alunoId');
       final querySnapshot = await _firestore
           .collection(_collection)
           .where('alunosDestino', arrayContains: alunoId)
           .where('ativo', isEqualTo: true)
           .get();
 
-      debugPrint(
-          'Query executada. Documentos encontrados: ${querySnapshot.docs.length}');
-
       final postagens = querySnapshot.docs.map((doc) {
-        debugPrint('Documento encontrado: ${doc.id}');
-        final data = doc.data();
-        debugPrint('Dados do documento: $data');
         return PostagemModel.fromFirestore(doc);
       }).toList();
 
       // Ordenar por data de postagem no código local
       postagens.sort((a, b) => b.dataPostagem.compareTo(a.dataPostagem));
 
-      debugPrint('Total de postagens processadas: ${postagens.length}');
       return postagens;
     } catch (e) {
-      debugPrint('Erro ao buscar postagens para aluno: $e');
       return [];
     }
   }
@@ -114,7 +89,6 @@ class PostagemService {
           .map((doc) => PostagemModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar postagens por matéria: $e');
       return [];
     }
   }
@@ -130,7 +104,6 @@ class PostagemService {
       }
       return null;
     } catch (e) {
-      debugPrint('Erro ao buscar postagem por ID: $e');
       return null;
     }
   }
@@ -142,10 +115,7 @@ class PostagemService {
           .collection(_collection)
           .doc(postagem.id)
           .update(postagem.toFirestore());
-
-      debugPrint('Postagem atualizada: ${postagem.id}');
     } catch (e) {
-      debugPrint('Erro ao atualizar postagem: $e');
       rethrow;
     }
   }
@@ -156,10 +126,7 @@ class PostagemService {
       await _firestore.collection(_collection).doc(postagemId).update({
         'ativo': false,
       });
-
-      debugPrint('Postagem removida: $postagemId');
     } catch (e) {
-      debugPrint('Erro ao remover postagem: $e');
       rethrow;
     }
   }
@@ -181,7 +148,6 @@ class PostagemService {
 
       return postagensAgrupadas;
     } catch (e) {
-      debugPrint('Erro ao agrupar postagens por matéria: $e');
       return {};
     }
   }
@@ -224,10 +190,7 @@ class PostagemService {
       await _firestore.collection(_collection).doc(postagemId).update({
         'anexos': FieldValue.arrayUnion([urlAnexo]),
       });
-
-      debugPrint('Anexo adicionado à postagem: $postagemId');
     } catch (e) {
-      debugPrint('Erro ao adicionar anexo: $e');
       rethrow;
     }
   }
@@ -238,10 +201,7 @@ class PostagemService {
       await _firestore.collection(_collection).doc(postagemId).update({
         'anexos': FieldValue.arrayRemove([urlAnexo]),
       });
-
-      debugPrint('Anexo removido da postagem: $postagemId');
     } catch (e) {
-      debugPrint('Erro ao remover anexo: $e');
       rethrow;
     }
   }
@@ -258,7 +218,6 @@ class PostagemService {
 
       return querySnapshot.count ?? 0;
     } catch (e) {
-      debugPrint('Erro ao contar postagens: $e');
       return 0;
     }
   }
@@ -282,7 +241,6 @@ class PostagemService {
           .map((doc) => PostagemModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar postagens recentes: $e');
       return [];
     }
   }
@@ -301,7 +259,6 @@ class PostagemService {
           .map((doc) => PostagemModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar todas as postagens do professor: $e');
       return [];
     }
   }

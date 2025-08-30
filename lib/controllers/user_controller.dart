@@ -33,9 +33,11 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/user_service.dart';
 import '../models/user_model.dart';
 import 'aula_controller.dart';
+import 'postagem_controller.dart';
 
 class UserController extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -145,12 +147,28 @@ class UserController extends ChangeNotifier {
   // Excluir aluno
   Future<void> excluirAluno(String alunoId, BuildContext context) async {
     try {
-      // Primeiro, remover todas as aulas do aluno
-      final aulaController = AulaController();
+      // Primeiro, remover todas as aulas do aluno usando Provider global
+      final aulaController =
+          Provider.of<AulaController>(context, listen: false);
       await aulaController.removerAulasDoAluno(alunoId);
 
       // Depois, remover o aluno
       await deleteUserProfile(alunoId, 'aluno');
+
+      // Recarregar dados do professor para atualizar dashboards
+      final professor = _user;
+      if (professor?.id != null) {
+        // Recarregar aulas do professor
+        await aulaController.carregarAulasProfessor(professor!.id);
+
+        // Verificar se o contexto ainda está montado antes de usar Provider
+        if (!context.mounted) return;
+
+        // Recarregar postagens se necessário
+        final postagemController =
+            Provider.of<PostagemController>(context, listen: false);
+        await postagemController.carregarPostagensProfessor(professor.id);
+      }
 
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

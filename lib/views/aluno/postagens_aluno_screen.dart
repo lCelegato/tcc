@@ -33,13 +33,7 @@ class _PostagensAlunoScreenState extends State<PostagensAlunoScreen> {
     final usuario = userController.user;
 
     if (usuario != null) {
-      debugPrint('Carregando postagens para o aluno: ${usuario.id}');
-      debugPrint('Nome do usuário: ${usuario.nome}');
       await postagemController.carregarPostagensAgrupadasPorMateria(usuario.id);
-      debugPrint(
-          'Postagens carregadas: ${postagemController.postagensAgrupadas.length} matérias');
-    } else {
-      debugPrint('Usuário não encontrado!');
     }
   }
 

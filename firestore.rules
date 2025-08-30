@@ -9,8 +9,15 @@ service cloud.firestore {
     }
 
     // Usuários: cada um só pode ler/escrever seu próprio documento
+    // Professores também podem ler dados de seus alunos
     match /usuarios/{userId} {
       allow read, write: if isAuthenticated() && isOwner(userId);
+      // Permite que professores leiam dados de alunos vinculados
+      allow read: if isAuthenticated() && 
+        resource.data.tipo == 'aluno' && 
+        resource.data.professorId == request.auth.uid;
+      // Permite que professores listem seus alunos
+      allow list: if isAuthenticated();
     }
 
     // Professores: leitura/listagem pública, escrita só autenticado dono

@@ -28,7 +28,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
   bool _obscurePassword = true;
 
   // Controladores para aulas
-  late AulaController _aulaController;
   List<AulaModel> _aulasDoAluno = [];
   bool _isLoadingAulas = false;
 
@@ -38,7 +37,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
     _nomeController = TextEditingController(text: widget.aluno.nome);
     _emailController = TextEditingController(text: widget.aluno.email);
     _senhaController = TextEditingController();
-    _aulaController = AulaController();
     _carregarAulasDoAluno();
   }
 
@@ -47,7 +45,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
     _nomeController.dispose();
     _emailController.dispose();
     _senhaController.dispose();
-    _aulaController.dispose();
     super.dispose();
   }
 
@@ -57,15 +54,26 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
     });
 
     try {
-      debugPrint('Carregando aulas para o aluno: ${widget.aluno.id}');
-      await _aulaController.carregarAulasAluno(widget.aluno.id);
-      setState(() {
-        _aulasDoAluno = _aulaController.aulas;
-        _isLoadingAulas = false;
-      });
-      debugPrint('Aulas carregadas: ${_aulasDoAluno.length}');
+      final userController = context.read<UserController>();
+      final professor = userController.user;
+
+      if (professor != null) {
+        final aulaController = context.read<AulaController>();
+
+        // Buscar aulas específicas entre este professor e este aluno
+        final aulasEspecificas = await aulaController.buscarAulasEspecificas(
+            widget.aluno.id, professor.id);
+
+        setState(() {
+          _aulasDoAluno = aulasEspecificas;
+          _isLoadingAulas = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingAulas = false;
+        });
+      }
     } catch (e) {
-      debugPrint('Erro ao carregar aulas: $e');
       setState(() {
         _isLoadingAulas = false;
       });
@@ -131,8 +139,9 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
       ),
     );
 
-    if (confirmacao == true) {
-      final sucesso = await _aulaController.removerAula(
+    if (confirmacao == true && mounted) {
+      final aulaController = context.read<AulaController>();
+      final sucesso = await aulaController.removerAula(
         aula.id,
         aula.professorId,
       );
@@ -371,8 +380,9 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
                           ),
                         ),
                       ),
-                      title: Text(aula.nomeDiaSemana),
-                      subtitle: Text('Horário: ${aula.horario}'),
+                      title: Text(aula.titulo),
+                      subtitle: Text(
+                          '${aula.nomeDiaSemana} • Horário: ${aula.horario}'),
                       trailing: PopupMenuButton<String>(
                         onSelected: (value) {
                           if (value == 'editar') {
@@ -432,10 +442,16 @@ class _DialogAdicionarAula extends StatefulWidget {
 }
 
 class _DialogAdicionarAulaState extends State<_DialogAdicionarAula> {
-  final AulaController _aulaController = AulaController();
   int? _diaSelecionado;
   TimeOfDay? _horarioSelecionado;
+  final _tituloController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _tituloController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -461,6 +477,16 @@ class _DialogAdicionarAulaState extends State<_DialogAdicionarAula> {
                 _diaSelecionado = value;
               });
             },
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _tituloController,
+            decoration: const InputDecoration(
+              labelText: 'Título da Aula',
+              hintText: 'Ex: Matemática, Inglês, Reforço...',
+              border: OutlineInputBorder(),
+            ),
+            maxLength: 50,
           ),
           const SizedBox(height: 16),
           GestureDetector(
@@ -547,11 +573,15 @@ class _DialogAdicionarAulaState extends State<_DialogAdicionarAula> {
     final horarioFormatado =
         '${_horarioSelecionado!.hour.toString().padLeft(2, '0')}:${_horarioSelecionado!.minute.toString().padLeft(2, '0')}';
 
-    final sucesso = await _aulaController.criarAula(
+    final aulaController = context.read<AulaController>();
+    final sucesso = await aulaController.criarAula(
       professorId: widget.professorId,
       alunoId: widget.alunoId,
       diaSemana: _diaSelecionado!,
       horario: horarioFormatado,
+      titulo: _tituloController.text.trim().isEmpty
+          ? 'Aula particular'
+          : _tituloController.text.trim(),
     );
 
     setState(() {
@@ -570,19 +600,13 @@ class _DialogAdicionarAulaState extends State<_DialogAdicionarAula> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_aulaController.errorMessage.isNotEmpty
-              ? _aulaController.errorMessage
+          content: Text(aulaController.errorMessage.isNotEmpty
+              ? aulaController.errorMessage
               : 'Erro ao adicionar horário'),
           backgroundColor: Colors.red,
         ),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _aulaController.dispose();
-    super.dispose();
   }
 }
 
@@ -601,7 +625,6 @@ class _DialogEditarAula extends StatefulWidget {
 }
 
 class _DialogEditarAulaState extends State<_DialogEditarAula> {
-  final AulaController _aulaController = AulaController();
   late int _diaSelecionado;
   late TimeOfDay _horarioSelecionado;
   bool _isLoading = false;
@@ -715,7 +738,8 @@ class _DialogEditarAulaState extends State<_DialogEditarAula> {
       horario: horarioFormatado,
     );
 
-    final sucesso = await _aulaController.atualizarAula(aulaAtualizada);
+    final aulaController = context.read<AulaController>();
+    final sucesso = await aulaController.atualizarAula(aulaAtualizada);
 
     setState(() {
       _isLoading = false;
@@ -733,18 +757,12 @@ class _DialogEditarAulaState extends State<_DialogEditarAula> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_aulaController.errorMessage.isNotEmpty
-              ? _aulaController.errorMessage
+          content: Text(aulaController.errorMessage.isNotEmpty
+              ? aulaController.errorMessage
               : 'Erro ao atualizar horário'),
           backgroundColor: Colors.red,
         ),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _aulaController.dispose();
-    super.dispose();
   }
 }

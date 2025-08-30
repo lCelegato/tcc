@@ -15,6 +15,8 @@ class PostagemModel {
   final DateTime dataPostagem;
   final List<String> alunosDestino; // IDs dos alunos que receberão a postagem
   final List<String>? anexos; // URLs dos anexos/imagens
+  final List<String>? imagens; // Base64 das imagens da postagem
+  final List<Map<String, dynamic>>? documentos; // Documentos em Base64
   final bool ativo;
 
   PostagemModel({
@@ -26,6 +28,8 @@ class PostagemModel {
     required this.dataPostagem,
     required this.alunosDestino,
     this.anexos,
+    this.imagens,
+    this.documentos,
     this.ativo = true,
   });
 
@@ -42,6 +46,11 @@ class PostagemModel {
       dataPostagem: (data['dataPostagem'] as Timestamp).toDate(),
       alunosDestino: List<String>.from(data['alunosDestino'] ?? []),
       anexos: data['anexos'] != null ? List<String>.from(data['anexos']) : null,
+      imagens:
+          data['imagens'] != null ? List<String>.from(data['imagens']) : null,
+      documentos: data['documentos'] != null
+          ? List<Map<String, dynamic>>.from(data['documentos'])
+          : null,
       ativo: data['ativo'] ?? true,
     );
   }
@@ -56,6 +65,8 @@ class PostagemModel {
       'dataPostagem': Timestamp.fromDate(dataPostagem),
       'alunosDestino': alunosDestino,
       'anexos': anexos,
+      'imagens': imagens,
+      'documentos': documentos,
       'ativo': ativo,
     };
   }
@@ -70,6 +81,8 @@ class PostagemModel {
     DateTime? dataPostagem,
     List<String>? alunosDestino,
     List<String>? anexos,
+    List<String>? imagens,
+    List<Map<String, dynamic>>? documentos,
     bool? ativo,
   }) {
     return PostagemModel(
@@ -81,6 +94,8 @@ class PostagemModel {
       dataPostagem: dataPostagem ?? this.dataPostagem,
       alunosDestino: alunosDestino ?? this.alunosDestino,
       anexos: anexos ?? this.anexos,
+      imagens: imagens ?? this.imagens,
+      documentos: documentos ?? this.documentos,
       ativo: ativo ?? this.ativo,
     );
   }
@@ -111,6 +126,21 @@ class PostagemModel {
 
   /// Retorna se tem anexos
   bool get temAnexos => anexos != null && anexos!.isNotEmpty;
+
+  /// Retorna se tem imagens
+  bool get temImagens => imagens != null && imagens!.isNotEmpty;
+
+  /// Retorna se tem documentos
+  bool get temDocumentos => documentos != null && documentos!.isNotEmpty;
+
+  /// Retorna total de documentos
+  int get totalDocumentos => documentos?.length ?? 0;
+
+  /// Retorna total de mídias (anexos + imagens + documentos)
+  int get totalMidias =>
+      (anexos?.length ?? 0) +
+      (imagens?.length ?? 0) +
+      (documentos?.length ?? 0);
 
   @override
   String toString() {

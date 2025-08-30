@@ -7,7 +7,7 @@
 /// - Notificar mudanças na UI
 library;
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/postagem_model.dart';
 import '../services/postagem_service.dart';
 
@@ -48,14 +48,11 @@ class PostagemController extends ChangeNotifier {
     required String materia,
     required List<String> alunosDestino,
     List<String>? anexos,
+    List<String>? imagens,
+    List<Map<String, dynamic>>? documentos,
   }) async {
     try {
       _setState(PostagemState.loading);
-
-      debugPrint(
-          'Criando postagem para ${alunosDestino.length} alunos: $alunosDestino');
-      debugPrint('Matéria: $materia');
-      debugPrint('Título: $titulo');
 
       // Validar dados de entrada
       if (!_validarDadosPostagem(titulo, conteudo, materia, alunosDestino)) {
@@ -72,6 +69,8 @@ class PostagemController extends ChangeNotifier {
         dataPostagem: DateTime.now(),
         alunosDestino: alunosDestino,
         anexos: anexos,
+        imagens: imagens,
+        documentos: documentos,
       );
 
       await _postagemService.criarPostagem(novaPostagem);
@@ -95,11 +94,6 @@ class PostagemController extends ChangeNotifier {
           'Controller: Iniciando carregamento de postagens para professor ID: $professorId');
       _setState(PostagemState.loading);
       _postagens = await _postagemService.buscarPostagensProfessor(professorId);
-      debugPrint('Controller: Postagens carregadas: ${_postagens.length}');
-      for (final postagem in _postagens) {
-        debugPrint(
-            '- ${postagem.titulo} (${postagem.materia}) - ${postagem.dataFormatada}');
-      }
       _setState(PostagemState.success);
     } catch (e) {
       debugPrint('Erro ao carregar postagens do professor: $e');

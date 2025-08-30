@@ -39,6 +39,7 @@ class AulaController extends ChangeNotifier {
     required String alunoId,
     required int diaSemana,
     required String horario,
+    String titulo = 'Aula particular',
   }) async {
     try {
       _setState(AulaState.loading);
@@ -67,6 +68,7 @@ class AulaController extends ChangeNotifier {
         alunoId: alunoId,
         diaSemana: diaSemana,
         horario: horario,
+        titulo: titulo,
       );
 
       await _aulaService.criarAula(novaAula);
@@ -77,7 +79,6 @@ class AulaController extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      debugPrint('Erro no controller ao criar aula: $e');
       _setState(AulaState.error, error: 'Erro ao criar aula: $e');
       return false;
     }
@@ -90,7 +91,6 @@ class AulaController extends ChangeNotifier {
       _aulas = await _aulaService.buscarAulasPorProfessor(professorId);
       _setState(AulaState.success);
     } catch (e) {
-      debugPrint('Erro ao carregar aulas do professor: $e');
       _setState(AulaState.error, error: 'Erro ao carregar aulas');
     }
   }
@@ -102,7 +102,6 @@ class AulaController extends ChangeNotifier {
       _aulas = await _aulaService.buscarAulasPorAluno(alunoId);
       _setState(AulaState.success);
     } catch (e) {
-      debugPrint('Erro ao carregar aulas do aluno: $e');
       _setState(AulaState.error, error: 'Erro ao carregar aulas');
     }
   }
@@ -116,7 +115,6 @@ class AulaController extends ChangeNotifier {
       return await _aulaService.buscarAulasAlunoEProfessor(
           alunoId, professorId);
     } catch (e) {
-      debugPrint('Erro ao buscar aulas específicas: $e');
       return [];
     }
   }
@@ -139,7 +137,6 @@ class AulaController extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      debugPrint('Erro ao atualizar aula: $e');
       _setState(AulaState.error, error: 'Erro ao atualizar aula');
       return false;
     }
@@ -157,7 +154,6 @@ class AulaController extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      debugPrint('Erro ao remover aula: $e');
       _setState(AulaState.error, error: 'Erro ao remover aula');
       return false;
     }
@@ -168,7 +164,7 @@ class AulaController extends ChangeNotifier {
     try {
       await _aulaService.removerAulasDoAluno(alunoId);
     } catch (e) {
-      debugPrint('Erro ao remover aulas do aluno: $e');
+      // Ignora erro ao remover aulas do aluno
     }
   }
 
@@ -225,5 +221,36 @@ class AulaController extends ChangeNotifier {
   /// Reseta o estado do controller
   void resetState() {
     _setState(AulaState.idle);
+  }
+
+  /// Remove aulas órfãs (de alunos que não existem mais)
+  Future<void> limparAulasOrfas(
+      String professorId, List<String> alunosExistentesIds) async {
+    try {
+      _setState(AulaState.loading);
+
+      // Buscar todas as aulas do professor
+      final todasAulas =
+          await _aulaService.buscarAulasPorProfessor(professorId);
+
+      // Identificar aulas órfãs
+      final aulasOrfas = todasAulas
+          .where((aula) => !alunosExistentesIds.contains(aula.alunoId))
+          .toList();
+
+      // Remover aulas órfãs
+      for (final aula in aulasOrfas) {
+        await _aulaService.deletarAula(aula.id);
+      }
+
+      if (aulasOrfas.isNotEmpty) {
+        // Recarregar aulas atualizadas
+        await carregarAulasProfessor(professorId);
+      }
+
+      _setState(AulaState.success);
+    } catch (e) {
+      _setState(AulaState.error, error: 'Erro ao limpar aulas órfãs');
+    }
   }
 }

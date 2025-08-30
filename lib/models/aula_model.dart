@@ -20,6 +20,7 @@ class AulaModel {
   final String alunoId;
   final int diaSemana; // 1=Segunda, 2=Terça, ..., 7=Domingo
   final String horario; // Formato "HH:mm"
+  final String titulo; // Título personalizado da aula
   final bool ativa;
   final DateTime? dataCriacao;
 
@@ -29,6 +30,7 @@ class AulaModel {
     required this.alunoId,
     required this.diaSemana,
     required this.horario,
+    this.titulo = 'Aula particular',
     this.ativa = true,
     this.dataCriacao,
   });
@@ -41,6 +43,7 @@ class AulaModel {
         alunoId: map['alunoId'] as String,
         diaSemana: map['diaSemana'] as int,
         horario: map['horario'] as String,
+        titulo: map['titulo'] as String? ?? 'Aula particular',
         ativa: map['ativa'] as bool? ?? true,
         dataCriacao: map['dataCriacao'] != null
             ? (map['dataCriacao'] as Timestamp).toDate()
@@ -59,6 +62,7 @@ class AulaModel {
       'alunoId': alunoId,
       'diaSemana': diaSemana,
       'horario': horario,
+      'titulo': titulo,
       'ativa': ativa,
       'dataCriacao': dataCriacao,
     };
@@ -70,6 +74,7 @@ class AulaModel {
     String? alunoId,
     int? diaSemana,
     String? horario,
+    String? titulo,
     bool? ativa,
     DateTime? dataCriacao,
   }) {
@@ -79,6 +84,7 @@ class AulaModel {
       alunoId: alunoId ?? this.alunoId,
       diaSemana: diaSemana ?? this.diaSemana,
       horario: horario ?? this.horario,
+      titulo: titulo ?? this.titulo,
       ativa: ativa ?? this.ativa,
       dataCriacao: dataCriacao ?? this.dataCriacao,
     );

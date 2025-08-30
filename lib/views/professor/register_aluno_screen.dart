@@ -22,10 +22,10 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
 
   final CadastroAlunoController _cadastroAlunoController =
       CadastroAlunoController();
-  final AulaController _aulaController = AulaController();
 
   // Controles para agendamento de aulas
   final List<Map<String, dynamic>> _agendamentos = [];
+  final _tituloAulaController = TextEditingController();
   int? _diaSelecionado;
   TimeOfDay? _horarioSelecionado;
 
@@ -55,14 +55,16 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
         );
 
         // Se o aluno foi cadastrado com sucesso e há agendamentos
-        if (alunoId != null && _agendamentos.isNotEmpty) {
-          // Criar as aulas agendadas
+        if (alunoId != null && _agendamentos.isNotEmpty && mounted) {
+          // Criar as aulas agendadas usando Provider global
+          final aulaController = context.read<AulaController>();
           for (final agendamento in _agendamentos) {
-            await _aulaController.criarAula(
+            await aulaController.criarAula(
               professorId: professor.id,
               alunoId: alunoId,
               diaSemana: agendamento['dia'],
               horario: agendamento['horario'],
+              titulo: agendamento['titulo'],
             );
           }
         }
@@ -85,11 +87,15 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
           _agendamentos.add({
             'dia': _diaSelecionado!,
             'horario': horarioFormatado,
+            'titulo': _tituloAulaController.text.trim().isEmpty
+                ? 'Aula particular'
+                : _tituloAulaController.text.trim(),
             'nomeDia': AulaController.diasSemana
                 .firstWhere((dia) => dia['valor'] == _diaSelecionado)['nome'],
           });
           _diaSelecionado = null;
           _horarioSelecionado = null;
+          _tituloAulaController.clear();
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -274,6 +280,16 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
                               },
                             ),
                             const SizedBox(height: 16),
+                            TextField(
+                              controller: _tituloAulaController,
+                              decoration: const InputDecoration(
+                                labelText: 'Título da Aula',
+                                hintText: 'Ex: Matemática, Inglês, Reforço...',
+                                border: OutlineInputBorder(),
+                              ),
+                              maxLength: 50,
+                            ),
+                            const SizedBox(height: 16),
                             GestureDetector(
                               onTap: _selecionarHorario,
                               child: Container(
@@ -344,7 +360,8 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${agendamento['nomeDia']} - ${agendamento['horario']}',
+                                          '${agendamento['nomeDia']} - ${agendamento['horario']}\n${agendamento['titulo']}',
+                                          style: const TextStyle(fontSize: 12),
                                         ),
                                         IconButton(
                                           icon: const Icon(
@@ -385,6 +402,7 @@ class _RegisterAlunoScreenState extends State<RegisterAlunoScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _tituloAulaController.dispose();
     super.dispose();
   }
 }

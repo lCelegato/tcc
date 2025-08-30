@@ -10,9 +10,13 @@ library;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/user_controller.dart';
+import '../../controllers/postagem_controller.dart';
+import '../../controllers/aula_controller.dart';
+import '../../models/user_model.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/menu_card.dart';
 import '../../routes/app_routes.dart';
+import 'gerenciar_aulas_screen.dart';
 import 'criar_postagem_screen.dart';
 import 'minhas_postagens_screen.dart';
 
@@ -29,7 +33,7 @@ class _ProfessorHomeScreenState extends State<ProfessorHomeScreen> {
   final List<Widget> _screens = [
     const _HomeContent(),
     const MinhasPostagensScreen(),
-    const _CronogramaContent(),
+    const GerenciarAulasScreen(),
     const _PerfilContent(),
   ];
 
@@ -75,8 +79,54 @@ class _ProfessorHomeScreenState extends State<ProfessorHomeScreen> {
   }
 }
 
-class _HomeContent extends StatelessWidget {
+class _HomeContent extends StatefulWidget {
   const _HomeContent();
+
+  @override
+  State<_HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<_HomeContent>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _carregarDados();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Recarregar dados quando o app volta ao foco
+      _recarregarDados();
+    }
+  }
+
+  void _carregarDados() {
+    final userController = context.read<UserController>();
+    final postagemController = context.read<PostagemController>();
+    final aulaController = context.read<AulaController>();
+    final professor = userController.user;
+
+    if (professor != null) {
+      // Carregar postagens e aulas do professor
+      postagemController.carregarPostagensProfessor(professor.id);
+      aulaController.carregarAulasProfessor(professor.id);
+    }
+  }
+
+  void _recarregarDados() {
+    _carregarDados();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +141,18 @@ class _HomeContent extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _recarregarDados,
+          ),
+          IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {
-              // TODO: Implementar notificações
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('Funcionalidade de notificações em desenvolvimento'),
+                ),
+              );
             },
           ),
         ],
@@ -213,12 +272,7 @@ class _HomeContent extends StatelessWidget {
                   title: 'Cronograma',
                   color: Colors.orange,
                   onTap: () {
-                    // TODO: Implementar cronograma
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Funcionalidade em desenvolvimento'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.gerenciarAulas);
                   },
                 ),
                 MenuCard(
@@ -226,10 +280,10 @@ class _HomeContent extends StatelessWidget {
                   title: 'Relatórios',
                   color: Colors.purple,
                   onTap: () {
-                    // TODO: Implementar relatórios
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Funcionalidade em desenvolvimento'),
+                        content: Text(
+                            'Funcionalidade de relatórios em desenvolvimento'),
                       ),
                     );
                   },
@@ -267,13 +321,64 @@ class _HomeContent extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatItem('Postagens', '0', Icons.article),
-                      _buildStatItem('Alunos', '0', Icons.people),
-                      _buildStatItem('Aulas', '0', Icons.school),
-                    ],
+                  Consumer3<PostagemController, AulaController, UserController>(
+                    builder: (context, postagemController, aulaController,
+                        userController, child) {
+                      // Contar postagens ativas
+                      final totalPostagens =
+                          postagemController.postagens.length;
+
+                      // Contar aulas ativas
+                      final totalAulas = aulaController.aulas.length;
+
+                      // Usar StreamBuilder para contar alunos reais do professor
+                      return StreamBuilder<List<UserModel>>(
+                        stream: userController.user?.id != null
+                            ? userController
+                                .getAlunosDoProfessor(userController.user!.id)
+                            : Stream.value([]),
+                        builder: (context, snapshot) {
+                          final alunosReais = snapshot.data ?? [];
+                          final totalAlunosReais = alunosReais.length;
+
+                          // Função para limpar aulas órfãs quando necessário
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (alunosReais.isNotEmpty &&
+                                aulaController.aulas.isNotEmpty) {
+                              final alunosIdsReais =
+                                  alunosReais.map((a) => a.id).toList();
+                              final alunosIdsNasAulas = aulaController.aulas
+                                  .map((aula) => aula.alunoId)
+                                  .toSet();
+
+                              // Verificar se há aulas órfãs
+                              final temAulasOrfas = alunosIdsNasAulas
+                                  .any((id) => !alunosIdsReais.contains(id));
+
+                              if (temAulasOrfas &&
+                                  userController.user?.id != null) {
+                                aulaController.limparAulasOrfas(
+                                  userController.user!.id,
+                                  alunosIdsReais,
+                                );
+                              }
+                            }
+                          });
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem('Postagens', '$totalPostagens',
+                                  Icons.article),
+                              _buildStatItem(
+                                  'Alunos', '$totalAlunosReais', Icons.people),
+                              _buildStatItem(
+                                  'Aulas', '$totalAulas', Icons.school),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -305,42 +410,6 @@ class _HomeContent extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CronogramaContent extends StatelessWidget {
-  const _CronogramaContent();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cronograma'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.schedule,
-              size: 64,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Cronograma em desenvolvimento',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

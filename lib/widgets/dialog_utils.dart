@@ -51,58 +51,20 @@ class DialogUtils {
     String cancelText = 'Cancelar',
     String? Function(String?)? validator,
   }) async {
-    final controller = TextEditingController(text: initialValue);
-    final formKey = GlobalKey<FormState>();
-
-    final result = await showDialog<String>(
+    return await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (message != null) ...[
-                Text(message),
-                const SizedBox(height: 16),
-              ],
-              TextFormField(
-                controller: controller,
-                obscureText: obscureText,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  border: const OutlineInputBorder(),
-                  prefixIcon: obscureText
-                      ? const Icon(Icons.lock)
-                      : const Icon(Icons.text_fields),
-                ),
-                validator: validator,
-                autofocus: true,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(null),
-            child: Text(cancelText),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState?.validate() ?? false) {
-                Navigator.of(context).pop(controller.text.trim());
-              }
-            },
-            child: Text(confirmText),
-          ),
-        ],
+      builder: (context) => _TextInputDialog(
+        title: title,
+        message: message,
+        hintText: hintText,
+        initialValue: initialValue,
+        obscureText: obscureText,
+        confirmText: confirmText,
+        cancelText: cancelText,
+        validator: validator,
       ),
     );
-
-    controller.dispose();
-    return result;
   }
 
   /// Dialog de informação simples
@@ -179,5 +141,93 @@ class DialogUtils {
   /// Fecha dialog de carregamento
   static void hideLoadingDialog(BuildContext context) {
     Navigator.of(context).pop();
+  }
+}
+
+class _TextInputDialog extends StatefulWidget {
+  final String title;
+  final String? message;
+  final String? hintText;
+  final String? initialValue;
+  final bool obscureText;
+  final String confirmText;
+  final String cancelText;
+  final String? Function(String?)? validator;
+
+  const _TextInputDialog({
+    required this.title,
+    this.message,
+    this.hintText,
+    this.initialValue,
+    this.obscureText = false,
+    this.confirmText = 'OK',
+    this.cancelText = 'Cancelar',
+    this.validator,
+  });
+
+  @override
+  State<_TextInputDialog> createState() => _TextInputDialogState();
+}
+
+class _TextInputDialogState extends State<_TextInputDialog> {
+  late final TextEditingController _controller;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.message != null) ...[
+              Text(widget.message!),
+              const SizedBox(height: 16),
+            ],
+            TextFormField(
+              controller: _controller,
+              obscureText: widget.obscureText,
+              decoration: InputDecoration(
+                hintText: widget.hintText,
+                border: const OutlineInputBorder(),
+                prefixIcon: widget.obscureText
+                    ? const Icon(Icons.lock)
+                    : const Icon(Icons.text_fields),
+              ),
+              validator: widget.validator,
+              autofocus: true,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(null),
+          child: Text(widget.cancelText),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              Navigator.of(context).pop(_controller.text.trim());
+            }
+          },
+          child: Text(widget.confirmText),
+        ),
+      ],
+    );
   }
 }

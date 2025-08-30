@@ -253,7 +253,7 @@ class _CronogramaAlunoScreenState extends State<CronogramaAlunoScreen> {
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              'Aula particular',
+              aula.titulo,
               style: TextStyle(
                 color: Colors.grey.shade700,
                 fontSize: 14,

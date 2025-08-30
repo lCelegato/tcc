@@ -129,21 +129,8 @@ class _MinhasPostagensScreenState extends State<MinhasPostagensScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.bug_report),
-            onPressed: () async {
-              final userController = context.read<UserController>();
-              final usuario = userController.user;
-              if (usuario != null) {
-                debugPrint('DEBUG: Professor ID: ${usuario.id}');
-                debugPrint('DEBUG: Tipo de usuário: ${usuario.tipo}');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Debug: Professor ID: ${usuario.id}'),
-                    duration: const Duration(seconds: 3),
-                  ),
-                );
-              }
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: _carregarPostagens,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),

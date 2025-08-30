@@ -13,6 +13,8 @@ import '../../controllers/user_controller.dart';
 import '../../models/postagem_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_button.dart';
+import '../../widgets/image_manager_widget.dart';
+import '../../widgets/documento_manager_widget.dart';
 
 class CriarPostagemScreen extends StatefulWidget {
   const CriarPostagemScreen({super.key});
@@ -28,6 +30,8 @@ class _CriarPostagemScreenState extends State<CriarPostagemScreen> {
 
   String? _materiaSelecionada;
   final List<String> _alunosSelecionados = [];
+  final List<String> _imagensSelecionadas = [];
+  final List<Map<String, dynamic>> _documentosSelecionados = [];
   List<UserModel> _alunosDisponiveis = [];
   bool _isLoading = false;
 
@@ -89,6 +93,9 @@ class _CriarPostagemScreenState extends State<CriarPostagemScreen> {
       conteudo: _conteudoController.text.trim(),
       materia: _materiaSelecionada!,
       alunosDestino: _alunosSelecionados,
+      imagens: _imagensSelecionadas.isNotEmpty ? _imagensSelecionadas : null,
+      documentos:
+          _documentosSelecionados.isNotEmpty ? _documentosSelecionados : null,
     );
 
     setState(() => _isLoading = false);
@@ -201,6 +208,42 @@ class _CriarPostagemScreenState extends State<CriarPostagemScreen> {
                 }
                 return null;
               },
+            ),
+            const SizedBox(height: 16),
+
+            // Seção de documentos
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: DocumentoManagerWidget(
+                  documentos: _documentosSelecionados,
+                  onDocumentosChanged: (novosDocumentos) {
+                    setState(() {
+                      _documentosSelecionados.clear();
+                      _documentosSelecionados.addAll(novosDocumentos);
+                    });
+                  },
+                  podeEditar: true,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Seção de imagens
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ImageManagerWidget(
+                  imagensExistentes: _imagensSelecionadas,
+                  onImagensChanged: (novasImagens) {
+                    setState(() {
+                      _imagensSelecionadas.clear();
+                      _imagensSelecionadas.addAll(novasImagens);
+                    });
+                  },
+                  isEditing: true,
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 

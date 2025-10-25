@@ -43,6 +43,7 @@ class _CronogramaAlunoScreenState extends State<CronogramaAlunoScreen> {
         title: const Text('Cronograma'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

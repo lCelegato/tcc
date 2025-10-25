@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import 'postagens_aluno_screen.dart';
 import 'cronograma_aluno_screen.dart';
+import 'perfil_aluno_screen.dart';
 
 class AlunoHomeScreen extends StatefulWidget {
   const AlunoHomeScreen({super.key});
@@ -52,9 +53,7 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
       case 1:
         return const CronogramaAlunoScreen();
       case 2:
-        return const Center(child: Text('Progresso em desenvolvimento'));
-      case 3:
-        return const Center(child: Text('Materiais em desenvolvimento'));
+        return const PerfilAlunoScreen();
       default:
         return const Center(child: Text('Página não encontrada'));
     }
@@ -65,6 +64,7 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Área do Aluno'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -89,12 +89,8 @@ class _AlunoHomeScreenState extends State<AlunoHomeScreen> {
             label: 'Cronograma',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up),
-            label: 'Progresso',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Materiais',
+            icon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
       ),

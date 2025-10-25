@@ -187,4 +187,9 @@ class UserController extends ChangeNotifier {
       );
     }
   }
+
+  // Buscar dados de um usuário específico
+  Stream<UserModel?> getUserById(String uid, String tipo) {
+    return _userService.getUserData(uid, tipo);
+  }
 }

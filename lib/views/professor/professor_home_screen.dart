@@ -19,6 +19,8 @@ import '../../routes/app_routes.dart';
 import 'gerenciar_aulas_screen.dart';
 import 'criar_postagem_screen.dart';
 import 'minhas_postagens_screen.dart';
+import 'editar_perfil_screen.dart';
+import 'alterar_senha_screen.dart';
 
 class ProfessorHomeScreen extends StatefulWidget {
   const ProfessorHomeScreen({super.key});
@@ -487,9 +489,10 @@ class _PerfilContent extends StatelessWidget {
               title: 'Editar Perfil',
               subtitle: 'Alterar informações pessoais',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidade em desenvolvimento'),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EditarPerfilScreen(),
                   ),
                 );
               },
@@ -499,21 +502,10 @@ class _PerfilContent extends StatelessWidget {
               title: 'Alterar Senha',
               subtitle: 'Trocar sua senha atual',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidade em desenvolvimento'),
-                  ),
-                );
-              },
-            ),
-            _buildProfileOption(
-              icon: Icons.help,
-              title: 'Ajuda',
-              subtitle: 'Dúvidas e suporte',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidade em desenvolvimento'),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AlterarSenhaScreen(),
                   ),
                 );
               },

@@ -127,6 +127,7 @@ class _MinhasPostagensScreenState extends State<MinhasPostagensScreen> {
         title: const Text('Minhas Postagens'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

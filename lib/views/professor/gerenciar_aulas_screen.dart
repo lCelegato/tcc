@@ -69,6 +69,7 @@ class _GerenciarAulasScreenState extends State<GerenciarAulasScreen> {
         title: const Text('Gerenciar Aulas'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

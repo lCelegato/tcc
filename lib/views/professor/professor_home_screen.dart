@@ -146,17 +146,6 @@ class _HomeContentState extends State<_HomeContent>
             icon: const Icon(Icons.refresh),
             onPressed: _recarregarDados,
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content:
-                      Text('Funcionalidade de notificações em desenvolvimento'),
-                ),
-              );
-            },
-          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -278,16 +267,11 @@ class _HomeContentState extends State<_HomeContent>
                   },
                 ),
                 MenuCard(
-                  icon: Icons.bar_chart,
-                  title: 'Relatórios',
+                  icon: Icons.person,
+                  title: 'Perfil',
                   color: Colors.purple,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Funcionalidade de relatórios em desenvolvimento'),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.editarPerfil);
                   },
                 ),
                 MenuCard(

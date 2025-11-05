@@ -25,7 +25,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
   late TextEditingController _emailController;
   late TextEditingController _senhaController;
   bool _isEditing = false;
-  bool _obscurePassword = true;
 
   // Controladores para aulas
   List<AulaModel> _aulasDoAluno = [];
@@ -165,9 +164,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
         'nome': _nomeController.text.trim(),
         'email': _emailController.text.trim(),
       };
-      if (_senhaController.text.isNotEmpty) {
-        dadosAtualizados['senha'] = _senhaController.text.trim();
-      }
       await userController.atualizarAluno(
           widget.aluno.id, dadosAtualizados, context);
       if (mounted) {
@@ -272,28 +268,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
               ),
               const SizedBox(height: 16),
               if (_isEditing) ...[
-                AppTextField(
-                  controller: _senhaController,
-                  label: 'Nova Senha (opcional)',
-                  icon: Icons.lock,
-                  obscureText: _obscurePassword,
-                  validator: (value) {
-                    if (value != null && value.isNotEmpty && value.length < 6) {
-                      return 'A senha deve ter pelo menos 6 caracteres';
-                    }
-                    return null;
-                  },
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                ),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -305,7 +279,6 @@ class _DetalhesAlunoScreenState extends State<DetalhesAlunoScreen> {
                             _isEditing = false;
                             _nomeController.text = widget.aluno.nome;
                             _emailController.text = widget.aluno.email;
-                            _senhaController.clear();
                           });
                         },
                         color: Colors.grey,

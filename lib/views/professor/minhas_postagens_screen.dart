@@ -133,10 +133,6 @@ class _MinhasPostagensScreenState extends State<MinhasPostagensScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: _carregarPostagens,
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _carregarPostagens,
-          ),
         ],
       ),
       body: Consumer<PostagemController>(

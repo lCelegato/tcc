@@ -41,6 +41,7 @@ import '../views/professor/minhas_postagens_screen.dart';
 import '../views/aluno/minhas_aulas_screen.dart';
 import '../views/aluno/postagens_aluno_screen.dart';
 import '../views/aluno/detalhes_postagem_screen.dart';
+import '../views/professor/editar_perfil_screen.dart';
 import '../models/user_model.dart';
 import '../models/postagem_model.dart';
 
@@ -93,6 +94,9 @@ class AppRoutes {
   /// Tela de detalhes da postagem
   static const String detalhesPostagem = '/detalhes-postagem';
 
+  /// Tela de editar perfil do professor
+  static const String editarPerfil = '/editar-perfil';
+
   /// Mapa de rotas nomeadas para uso no MaterialApp
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),
@@ -108,6 +112,7 @@ class AppRoutes {
         minhasPostagens: (context) => const MinhasPostagensScreen(),
         minhasAulas: (context) => const MinhasAulasScreen(),
         postagensAluno: (context) => const PostagensAlunoScreen(),
+        editarPerfil: (context) => const EditarPerfilScreen(),
       };
 
   /// Geração de rotas dinâmicas

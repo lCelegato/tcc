@@ -1,28 +1,4 @@
 /// Serviço responsável por operações CRUD de usuários no Firestore.
-/// 2. Estrutura de Dados:
-///    - ID do usuário (UID do Firebase)
-///      * String única gerada pelo Firebase Auth
-///      * Usado como documento ID no Firestore
-///    - Nome completo
-///      * String não vazia
-///      * Máximo 100 caracteres
-///    - Email
-///      * Formato válido de email
-///      * Deve ser único
-///    - Tipo (professor/aluno)
-///      * Enum: 'professor' ou 'aluno'
-///      * Define permissões e funcionalidades
-///    - Data de criação
-///      * Timestamp do Firestore
-///      * Automático na criação
-///
-/// Dependências:
-/// - Cloud Firestore: Para armazenamento de dados
-///   Configurado no firebase_options.dart
-///   Inicializado no main.dart
-/// - UserModel: Para estrutura de dados
-///   Define campos e validações
-///   Conversão de/para Firestore
 
 library;
 

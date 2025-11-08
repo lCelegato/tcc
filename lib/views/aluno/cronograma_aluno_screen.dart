@@ -1,6 +1,5 @@
 /// Tela do cronograma de aulas do aluno
-///
-/// Agora será uma aba separada, não mais a tela inicial
+
 library;
 
 import 'package:flutter/material.dart';

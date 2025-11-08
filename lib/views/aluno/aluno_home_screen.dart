@@ -1,8 +1,5 @@
-/// Tela específica para alunos que exibe o menu de funcionalidades disponíveis.
+/// Tela principal do aluno com navegação por abas
 ///
-/// Dependências:
-/// - MenuCard: Widget reutilizável para os cards do menu
-/// - AppButton: Widget reutilizável para os botões
 library;
 
 import 'package:flutter/material.dart';

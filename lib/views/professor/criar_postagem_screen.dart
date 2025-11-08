@@ -3,7 +3,7 @@
 /// Permite ao professor:
 /// - Criar postagens com título, conteúdo e matéria
 /// - Selecionar alunos destinatários
-/// - Adicionar anexos (futuramente)
+/// - Adicionar anexos (imagens e documentos)
 library;
 
 import 'package:flutter/material.dart';

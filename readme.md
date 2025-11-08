@@ -82,7 +82,7 @@ Professor cria → Seleciona alunos → Publica → Aluno recebe
 
 ### 🎯 **Funcionalidades**
 
-- 📅 **Horários fixos** para cada aluno
+- 📅 **Horários fixos** para cada alluno
 - 👨‍🏫 **Visão consolidada** para professores
 - 📱 **Cronograma pessoal** para alunos
 - ⚡ **Gerenciamento em tempo real**
